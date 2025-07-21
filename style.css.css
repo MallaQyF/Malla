@@ -1,0 +1,1133 @@
+/* Base/Default (Light) Theme */
+:root {
+  --bg: #f4f7f9; /* Lighter, cleaner background */
+  --text: #333;
+  --card: #fff;
+  --accent: #1565C0; /* Strong Blue */
+  --accent2: #42A5F5; /* Lighter Blue */
+  --green: #10B981; /* Teal Green */
+  --yellow: #FACC15; /* Amber Yellow */
+  --lila: #9C27B0; /* Deep Purple */
+  --red: #EF5350; /* Red */
+  --shadow: rgba(0,0,0,0.08);
+  --ramo-bg: #eceff1; /* Light Gray Blue */
+  --ramo-aprobado-bg: #c8e6c9; /* Light Green */
+  --ramo-desbloqueado-bg: #fff8e1; /* Very Light Yellow */
+  --creditos-bg: rgba(255, 255, 255, 0.8);
+  --success-modal-bg: #e8f5e9;
+  --success-modal-text: #1b5e20;
+}
+
+/* Dark Theme */
+body.dark {
+  --bg: #1a1a1a;
+  --text: #eee;
+  --card: #2c2c2c;
+  --accent: #4a90e2;
+  --accent2: #72aeff;
+  --green: #4CAF50;
+  --yellow: #FFEB3B;
+  --lila: #AB47BC;
+  --red: #FF5252;
+  --shadow: rgba(0,0,0,0.4);
+  --ramo-bg: #3c3c3c;
+  --ramo-aprobado-bg: #2e4b30;
+  --ramo-desbloqueado-bg: #5f4b00;
+  --creditos-bg: rgba(44, 44, 44, 0.8);
+  --success-modal-bg: #388e3c;
+  --success-modal-text: #e8f5e9;
+}
+
+/* Pastel Theme */
+body.pastel {
+  --bg: #f8e1fa;
+  --text: #5d3f6a;
+  --card: #fefefe;
+  --accent: #d8a7e0;
+  --accent2: #e9c3f0;
+  --green: #a7d8b0;
+  --yellow: #f0e68c;
+  --lila: #c3a7e0;
+  --red: #f0a7a7;
+  --shadow: rgba(0,0,0,0.1);
+  --ramo-bg: #f3e9f5;
+  --ramo-aprobado-bg: #e0f0e0;
+  --ramo-desbloqueado-bg: #f5f5e0;
+  --creditos-bg: rgba(254, 254, 254, 0.8);
+  --success-modal-bg: #a7d8b0;
+  --success-modal-text: #5d3f6a;
+}
+
+/* Celeste Theme */
+body.celeste {
+  --bg: #e0f7fa;
+  --text: #004d40;
+  --card: #ffffff;
+  --accent: #00838f;
+  --accent2: #00acc1;
+  --green: #4db6ac;
+  --yellow: #ffb74d;
+  --lila: #7986cb;
+  --red: #ef5350;
+  --shadow: rgba(0,0,0,0.1);
+  --ramo-bg: #e0f2f7;
+  --ramo-aprobado-bg: #b2ebf2;
+  --ramo-desbloqueado-bg: #ffe0b2;
+  --creditos-bg: rgba(255, 255, 255, 0.8);
+  --success-modal-bg: #4db6ac;
+  --success-modal-text: #004d40;
+}
+
+/* Rosado Theme */
+body.rosado {
+  --bg: #ffebee;
+  --text: #880e4f;
+  --card: #ffffff;
+  --accent: #c2185b;
+  --accent2: #e91e63;
+  --green: #a5d6a7;
+  --yellow: #ffcc80;
+  --lila: #ce93d8;
+  --red: #ef9a9a;
+  --shadow: rgba(0,0,0,0.1);
+  --ramo-bg: #fce4ec;
+  --ramo-aprobado-bg: #f8bbd0;
+  --ramo-desbloqueado-bg: #fff9c4;
+  --creditos-bg: rgba(255, 255, 255, 0.8);
+  --success-modal-bg: #e91e63;
+  --success-modal-text: #ffffff;
+}
+
+/* Verde Theme */
+body.verde {
+  --bg: #e8f5e9;
+  --text: #1b5e20;
+  --card: #ffffff;
+  --accent: #388e3c;
+  --accent2: #4caf50;
+  --green: #81c784;
+  --yellow: #fff176;
+  --lila: #9ccc65;
+  --red: #ef5350;
+  --shadow: rgba(0,0,0,0.1);
+  --ramo-bg: #e0f2f1;
+  --ramo-aprobado-bg: #c8e6c9;
+  --ramo-desbloqueado-bg: #fffde7;
+  --creditos-bg: rgba(255, 255, 255, 0.8);
+  --success-modal-bg: #4caf50;
+  --success-modal-text: #ffffff;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; font-family: 'Inter', sans-serif;
+  background: var(--bg); color: var(--text);
+  transition: background .3s, color .3s;
+  overflow-x: hidden; /* Prevent horizontal scrolling on small screens */
+}
+
+/* --- HEADER REDESIGN --- */
+#main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px;
+  background: var(--card);
+  color: var(--text);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px var(--shadow);
+  border-bottom: 4px solid var(--accent);
+  flex-wrap: wrap;
+  gap: 20px;
+}
+#header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+#header-left img {
+  height: 70px; /* Logo más grande */
+  width: auto;
+}
+#malla-link a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 8px 12px;
+  background: var(--ramo-bg);
+  border-radius: 8px;
+  transition: background .2s, color .2s;
+  font-size: 0.9em;
+}
+#malla-link a:hover { 
+  background: var(--accent);
+  color: #fff;
+}
+
+#header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2em;
+    font-weight: 700;
+    text-align: center;
+    flex-grow: 1;
+    color: var(--accent);
+    line-height: 1.2;
+}
+#unach-qf-link {
+    color: inherit;
+    text-decoration: none;
+}
+#university-name {
+    display: block;
+    font-size: 0.5em;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 4px;
+    font-family: 'Inter', sans-serif;
+}
+
+#header-right {
+  display: flex; align-items: center; gap: 15px;
+  font-size: .9em;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* --- Clock Redesign --- */
+#clock {
+    background: var(--ramo-bg);
+    border-radius: 8px;
+    padding: 8px 15px;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+#clock .time {
+    font-family: monospace;
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--accent);
+}
+#clock .date {
+    font-size: 0.8em;
+    font-weight: 600;
+    opacity: 0.7;
+}
+
+#theme-selector {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: .9em;
+    background: var(--card);
+    color: var(--text);
+}
+
+/* --- Login/User Panel Styles --- */
+#user-panel { position: relative; }
+.user-btn {
+    background: var(--accent);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    transition: background .2s;
+}
+.user-btn:hover { background: var(--accent2); }
+#login-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 8px;
+    background: var(--card);
+    color: var(--text);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px var(--shadow);
+    width: 280px;
+    z-index: 1100;
+    border: 1px solid var(--ramo-bg);
+}
+#login-dropdown.show { display: block; }
+#login-dropdown h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    color: var(--accent);
+}
+#login-dropdown input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--text);
+}
+#login-dropdown button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+#login-dropdown .btn-login {
+    background: var(--accent);
+    color: #fff;
+}
+ #login-dropdown .btn-login:hover { background: var(--accent2); }
+.btn-google {
+    background: #fff;
+    color: #757575;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.btn-google:hover { background: #f5f5f5; }
+.btn-google i { /* Estilo para el icono de Font Awesome */
+    width: 18px;
+    height: 18px;
+    font-size: 18px; /* Ajusta el tamaño si es necesario */
+}
+#login-dropdown .form-footer {
+    font-size: 0.85em;
+    text-align: center;
+    margin-top: 15px;
+}
+#login-dropdown .form-footer a {
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: none;
+}
+ #login-dropdown .form-footer a:hover { text-decoration: underline; }
+#user-info { display: none; align-items: center; gap: 10px; }
+#user-info #user-name { font-weight: 600; }
+#user-info #logout-btn {
+    background: var(--red);
+    color: white;
+    padding: 8px 12px;
+}
+
+
+/* BARRA SECUNDARIA */
+#topbar {
+  display: flex; align-items: center; justify-content: center; /* Centered items */
+  padding: 8px 20px; background: var(--accent);
+  color: #fff; position: sticky; top: 105px; /* Adjust for new header height */
+  z-index: 900;
+  box-shadow: 0 2px 4px var(--shadow);
+  font-size: .9em;
+  flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+  gap: 15px; /* Increased gap */
+}
+
+/* Combined Info Section */
+#combined-info {
+    background: rgba(255,255,255,0.1);
+    padding: 5px 10px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+    white-space: nowrap; /* Keep summary text on one line */
+}
+#combined-info summary {
+    cursor: pointer;
+    font-weight: 600;
+    outline: none; /* Quitar el contorno al hacer clic */
+    display: flex; /* Use flex to align text and custom marker */
+    align-items: center;
+    justify-content: space-between; /* Push marker to the right */
+}
+#combined-info summary::-webkit-details-marker {
+    display: none; /* Ocultar el marcador predeterminado */
+}
+#combined-info summary:after { /* Custom marker for details summary */
+    content: '\25B6'; /* Right-pointing triangle */
+    font-size: 0.8em;
+    margin-left: 8px;
+    transition: transform 0.2s;
+}
+#combined-info[open] summary:after {
+    content: '\25BC'; /* Down-pointing triangle when open */
+}
+#combined-info > div { /* Target the div directly inside details for content */
+    margin-top: 5px; /* Espacio para el contenido desplegado */
+    display: flex;
+    flex-direction: column; /* Stack details content vertically */
+    gap: 5px; /* Smaller gap for stacked items */
+    font-size: 0.85em; /* Slightly smaller font for details content */
+}
+#combined-info ul {
+  list-style: none; margin: 0; padding-left: 0; font-size: .9em;
+}
+#combined-info ul li {
+    margin-bottom: 4px;
+}
+#combined-info ul li:last-child {
+    margin-bottom: 0;
+}
+
+
+#topbar-controls {
+  display: flex; align-items: center; gap: 15px; /* Increased gap */
+  flex-wrap: wrap; /* Allow controls to wrap */
+  justify-content: center; /* Center controls */
+  flex-grow: 1; /* Allow controls to take available space */
+}
+#topbar-controls input[type="text"],
+#topbar-controls select {
+  padding: 6px 8px; border: none; border-radius: 4px;
+  font-size: .9em;
+  background: var(--card); /* Color de fondo para inputs/selects */
+  color: var(--text); /* Color de texto para inputs/selects */
+}
+#topbar-controls button {
+  background: var(--accent2); border: none; color: #fff;
+  padding: 6px 10px; border-radius: 4px; cursor: pointer;
+  transition: background .2s; font-size: .9em;
+}
+#topbar-controls button:hover { background: #2e7dff; }
+#contador { font-weight: 600; margin-left: 8px; }
+
+/* Nuevo estilo para la sección de créditos en el topbar (solo total) */
+#creditos-info {
+    margin-left: 15px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--creditos-bg); /* Fondo similar al card, pero distinto */
+    padding: 8px 12px;
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 1px 3px var(--shadow); /* Sombra ligera */
+    color: var(--text); /* Asegura que el texto sea visible */
+}
+#creditos-info .dot { /* Hide dots from topbar credits */
+    display: none;
+}
+#creditos-info span {
+    font-weight: 600;
+}
+#creditos-total {
+    font-size: 1.1em;
+}
+
+/* Estilo para el nuevo botón de información del tr._nico */
+.btn-info {
+    background: var(--accent2);
+    border: none;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background .2s;
+    font-size: .9em;
+    font-weight: 700;
+    width: 30px; /* Para que sea un botón cuadrado */
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: pulse-info-btn 2s infinite ease-in-out;
+}
+@keyframes pulse-info-btn {
+    0% { transform: scale(1); box-shadow: 0 0 0 rgba(255,255,255,0.4); }
+    50% { transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.1); }
+    100% { transform: scale(1); box-shadow: 0 0 0 rgba(255,255,255,0.4); }
+}
+.btn-info:hover {
+    background: #2e7dff;
+    animation-play-state: paused;
+}
+
+/* --- ESTILOS PARA EL NUEVO MENÚ DESPLEGABLE --- */
+.dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: var(--card);
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px var(--shadow);
+    z-index: 1;
+    border-radius: 8px;
+    padding: 8px 0;
+    border: 1px solid var(--ramo-bg);
+}
+.dropdown-menu button {
+    color: var(--text);
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.dropdown-menu button:hover {
+    background-color: var(--ramo-bg);
+}
+.dropdown-container:hover .dropdown-menu {
+    display: block;
+}
+
+
+/* LAYOUT PRINCIPAL */
+#content-wrapper {
+  display: flex; gap: 20px; padding: 20px;
+  align-items: flex-start; /* Alinea los elementos al inicio */
+  flex-wrap: wrap; /* Allow content to wrap on smaller screens */
+}
+/* LEYENDA ÁREAS */
+#legend {
+  background: var(--card); padding: 12px; border-radius: 8px;
+  box-shadow: 0 2px 6px var(--shadow); min-width: 180px;
+  color: var(--text); /* Asegura que el texto sea visible en modo oscuro */
+  margin-bottom: 20px; /* Espacio entre la leyenda y los nuevos widgets */
+}
+#legend table { width: 100%; border-collapse: collapse; font-size: .9em; }
+#legend th { padding-bottom: 8px; text-align: left; }
+#legend td { 
+    padding: 4px 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+#legend td.area-completed {
+    background-color: var(--ramo-aprobado-bg);
+    padding-left: 4px;
+    padding-right: 4px;
+}
+#legend td span:last-child { margin-left: auto; font-weight: 600; } /* Align credit count to right */
+
+.dot {
+  display: inline-block; width: 10px; height: 10px;
+  border-radius: 50%; margin-right: 6px; vertical-align: middle;
+}
+.area-espiritual { background: green; }
+.area-general    { background: #00bcd4; }
+.area-profesional{ background: var(--yellow); }
+.area-especialidad { background: var(--lila); }
+.area-practica   { background: red; }
+
+/* Nuevo estilo para la barra lateral de widgets */
+#left-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Espacio entre la leyenda y el panel de widgets */
+  min-width: 200px; /* Ancho mínimo para la barra lateral */
+  max-width: 250px; /* Ancho máximo */
+  flex-shrink: 0; /* Evita que la barra lateral se encoja */
+  width: 100%; /* Default to full width on small screens */
+}
+
+#widgets-panel {
+  background: var(--card);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espacio entre los widgets */
+}
+
+#widgets-panel h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--accent);
+  text-align: center;
+  font-size: 1.2em;
+}
+
+.widget-card {
+  padding: 10px;
+  border-radius: 6px;
+  background: var(--ramo-bg); /* Un color de fondo suave para los widgets */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.widget-card h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--accent2);
+  font-size: 1em;
+}
+
+.widget-card a {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.widget-card a:hover {
+  background: #0d47a1;
+}
+
+/* --- Style for calculator links in widgets --- */
+.widget-card.calc-box a {
+    background: none;
+    color: var(--accent);
+    font-weight: 600;
+    padding: 0;
+}
+.widget-card.calc-box a:hover {
+    text-decoration: underline;
+}
+
+/* Calendar Widget Specific Styles */
+#calendar-widget {
+    text-align: left;
+}
+#calendar-widget h4 {
+    text-align: center;
+}
+#calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+#calendar-header button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+#calendar-header button:hover {
+    background: #0d47a1;
+}
+#calendar-header h5 {
+    margin: 0;
+    font-size: 1.1em;
+    color: var(--accent);
+}
+#calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    font-size: 0.85em;
+}
+.day-name {
+    background: var(--accent2);
+    color: white;
+    padding: 5px 0;
+    text-align: center;
+    font-weight: 600;
+}
+.calendar-day {
+    background: var(--ramo-bg);
+    padding: 5px;
+    text-align: center;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+}
+.calendar-day.empty {
+    background: #eee; /* Lighter background for empty days */
+    color: #ccc;
+}
+body.dark .calendar-day.empty {
+    background: #444;
+    color: #777;
+}
+.calendar-day.current-day {
+    background: var(--green);
+    color: white;
+    font-weight: 700;
+}
+
+
+/* MALLA Y ZOOM */
+#malla-container {
+  overflow: auto; transform-origin: top center;
+  flex-grow: 1; /* Permite que la malla ocupe el espacio restante */
+}
+#malla {
+  display: flex; flex-direction: column; gap: 24px;
+  width: max-content; margin: auto;
+  padding: 20px; /* Add padding for the screenshot */
+  background-color: var(--bg); /* Ensure background is captured */
+}
+.year {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px,1fr));
+  gap: 20px;
+  background: var(--card);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px var(--shadow);
+  position: relative;
+  transition: border 0.3s, box-shadow 0.3s, background 0.3s;
+}
+.year[data-year-complete] {
+  border: 2px solid gold;
+  box-shadow: 0 0 8px rgba(255,215,0,0.8);
+}
+.year-label {
+  grid-column: 1 / -1;
+  background: linear-gradient(90deg,var(--accent2),var(--accent)); /* Gradient background */
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  font-weight: 600;
+  font-size: 1.1em;
+  display: flex; /* Usar flexbox para alinear el título y el botón de sello */
+  justify-content: space-between; /* Espacio entre el título y el botón */
+  align-items: center; /* Centrar verticalmente */
+  padding-left: 20px; /* Ajuste de padding para el texto */
+  padding-right: 20px; /* Ajuste de padding para el botón */
+}
+.horas-sellos-btn {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    white-space: nowrap; /* Evita que el texto se rompa */
+}
+.horas-sellos-btn:hover {
+    background: rgba(255,255,255,0.4);
+}
+.semestre {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+.semestre::before {
+  content: attr(data-sem)"° Semestre";
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.progress {
+  width: 100%; height: 8px;
+  background: #ddd; /* Fondo de la barra de progreso */
+  border-radius: 4px;
+  overflow: hidden; margin-bottom: 10px;
+}
+body.dark .progress {
+    background: #555; /* Fondo de la barra de progreso en modo oscuro */
+}
+.progress-fill {
+  width: 0; height: 100%;
+  background: var(--green);
+  transition: width .3s;
+}
+.ramo {
+  background: var(--ramo-bg);
+  margin: 6px 0;
+  padding: 8px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s, background .2s, color .2s;
+  border-left: 4px solid transparent;
+  font-size: .95em;
+  display: flex; align-items: center;
+  color: var(--text); /* Asegura que el texto sea visible */
+}
+.ramo .dot { margin-right: 8px; }
+.ramo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+/* ANIMACIONES DE RAMOS */
+.aprobado {
+  background: var(--ramo-aprobado-bg) !important;
+  border-left-color: var(--green) !important;
+  animation: sparkle-green 0.6s ease-out forwards; /* Animación al aprobar */
+}
+@keyframes sparkle-green {
+    0% { transform: scale(1); box-shadow: 0 0 0 var(--green); opacity: 1; }
+    50% { transform: scale(1.03); box-shadow: 0 0 15px var(--green), 0 0 30px var(--green); opacity: 0.8; }
+    100% { transform: scale(1); box-shadow: 0 0 0 var(--green); opacity: 1; }
+}
+
+.desbloqueado {
+  background: var(--ramo-desbloqueado-bg) !important;
+  border-left-color: var(--yellow) !important;
+  animation: pulse-yellow 1.5s infinite alternate ease-in-out; /* Animación parpadeante */
+}
+@keyframes pulse-yellow {
+    0% { box-shadow: 0 0 0 rgba(250, 204, 21, 0.4); }
+    100% { box-shadow: 0 0 15px rgba(250, 204, 21, 0.8); }
+}
+
+.error {
+  animation: shake .3s;
+  background: var(--red) !important;
+  color: #fff !important;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+.highlight {
+  border: 2px solid gold !important;
+  animation: pulse 1s infinite alternate;
+}
+@keyframes pulse {
+  from { box-shadow: 0 0 0 rgba(255,215,0,0.5); }
+  to   { box-shadow: 0 0 10px rgba(255,215,0,1); }
+}
+.empty { visibility: hidden; }
+
+/* Estilos para los Modales */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.modal-backdrop.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background-color: var(--card);
+  color: var(--text);
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px var(--shadow);
+  width: 90%;
+  max-width: 500px;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.modal-backdrop.show .modal-content {
+  transform: translateY(0);
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.modal-title {
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: var(--accent);
+}
+
+.modal-info p {
+  margin-bottom: 8px;
+  font-size: 0.95em;
+}
+
+.modal-info p strong {
+  color: var(--accent2);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.modal-buttons .btn-aprobado {
+  background-color: var(--green);
+  color: white;
+}
+
+.modal-buttons .btn-aprobado:hover {
+  background-color: #0b9e6f;
+}
+
+.modal-buttons .btn-desmarcar {
+  background-color: var(--red);
+  color: white;
+}
+
+.modal-buttons .btn-desmarcar:hover {
+  background-color: #d84315;
+}
+
+.modal-buttons .btn-close {
+    background-color: #ccc;
+    color: var(--text);
+}
+
+.modal-buttons .btn-close:hover {
+    background-color: #bbb;
+}
+
+/* Estilos para el modal de confirmación personalizado */
+.custom-confirm-modal .modal-content {
+    max-width: 400px;
+    text-align: center;
+}
+.custom-confirm-modal .modal-title {
+    color: var(--red);
+}
+.custom-confirm-modal .modal-buttons {
+    justify-content: center;
+}
+
+/* Estilos para el modal de mensaje personalizado (tr._nico) */
+.custom-alert-modal .modal-content {
+    max-width: 400px;
+    text-align: center;
+}
+.custom-alert-modal .modal-title {
+    color: var(--accent); /* Color principal para el título del mensaje */
+}
+.custom-alert-modal .modal-buttons {
+    justify-content: center;
+}
+
+/* Nuevo Modal de Felicidades por Semestre */
+#semester-complete-modal .modal-content {
+    background-color: var(--success-modal-bg);
+    color: var(--success-modal-text);
+    border: 3px solid var(--green);
+    animation: bounceIn 0.6s ease-out;
+    text-align: center;
+    max-width: 550px;
+}
+#semester-complete-modal .modal-title {
+    color: var(--success-modal-text);
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+#semester-complete-modal p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+#semester-complete-modal .modal-buttons {
+    justify-content: center;
+}
+#semester-complete-modal .modal-buttons .btn-close {
+    background-color: var(--green);
+    color: white;
+}
+#semester-complete-modal .btn-close:hover {
+    background-color: #0b9e6f;
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); opacity: 1; }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 1024px) {
+    #main-header, #topbar {
+        padding: 10px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    #header-left {
+        justify-content: center;
+    }
+    #header-right, #topbar-controls {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    #header-title {
+        font-size: 1.3em;
+        order: -1; /* Move title to the top on mobile */
+        width: 100%;
+    }
+    #university-name {
+            font-size: 0.7em;
+        }
+        #clock {
+            min-width: unset;
+            width: auto;
+        }
+        #creditos-info {
+            margin-left: 0;
+            width: 100%;
+            justify-content: center;
+        }
+        #content-wrapper {
+            flex-direction: column;
+            padding: 15px;
+            gap: 15px;
+        }
+        #left-sidebar {
+            max-width: 100%;
+            min-width: unset;
+        }
+        #malla-container {
+            width: 100%;
+            overflow-x: auto; /* Allow horizontal scroll for the malla if it's too wide */
+        }
+        #malla {
+            width: fit-content; /* Allow malla to take its natural width */
+            margin: 0 auto;
+        }
+        .year {
+            grid-template-columns: 1fr; /* Stack semestres vertically */
+            gap: 15px;
+        }
+        .year-label {
+            padding: 10px 15px;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .horas-sellos-btn {
+            font-size: 0.75em;
+            padding: 4px 8px;
+        }
+        .ramo {
+            font-size: 0.9em;
+            padding: 6px 8px;
+        }
+        #combined-info summary {
+            width: 100%; /* Make summary take full width */
+        }
+        #combined-info > div {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 600px) {
+        #main-header {
+            padding: 8px 10px;
+        }
+        #header-left img {
+            height: 40px;
+        }
+        #header-title {
+            font-size: 1.1em;
+        }
+        #university-name {
+            font-size: 0.6em;
+        }
+        #topbar {
+            padding: 8px 10px;
+            font-size: 0.8em;
+        }
+        #topbar-controls button,
+        #topbar-controls input,
+        #topbar-controls select {
+            font-size: 0.8em;
+            padding: 5px 8px;
+        }
+        #creditos-info {
+            font-size: 0.8em;
+            padding: 6px 10px;
+        }
+        #legend {
+            font-size: 0.8em;
+            padding: 10px;
+        }
+        .widget-card h4 {
+            font-size: 0.9em;
+        }
+        .widget-card a {
+            padding: 6px 10px;
+            font-size: 0.85em;
+        }
+        /* Further adjust malla layout if needed for very small screens */
+        .ramo {
+            font-size: 0.85em;
+        }
+        #login-dropdown {
+            width: 90vw;
+        }
+    }
+
+    /* --- ESTILOS PARA LA EXPORTACIÓN A PDF --- */
+    .malla-for-export {
+      display: flex !important;
+      flex-direction: row !important; /* Clave: Forzar layout horizontal */
+      align-items: flex-start;
+      gap: 15px !important;
+      padding: 20px;
+    }
+
+    .malla-for-export .year {
+      grid-template-columns: 1fr !important; /* Semestres en una columna por año */
+      width: 280px !important; /* Ancho fijo para cada columna de año */
+      flex-shrink: 0;
+    }
+
+    .malla-for-export .semestre {
+      page-break-inside: avoid;
+    }
+
+    /* --- ESTILOS PARA LA NOTIFICACIÓN AUTO-CERRABLE --- */
+    .auto-close-alert {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 20px;
+        border-radius: 8px;
+        background-color: var(--green);
+        color: white;
+        font-weight: 600;
+        z-index: 9999;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        opacity: 1;
+        transition: opacity 0.5s ease-out, top 0.5s ease-out;
+    }
+    .auto-close-alert.hide {
+        opacity: 0;
+        top: -50px;
+    }

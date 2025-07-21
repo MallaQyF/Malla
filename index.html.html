@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Malla Interactiva QyF UNACH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <!-- Enlace al archivo CSS externo -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Font Awesome para iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <!-- HEADER PRINCIPAL -->
+  <header id="main-header">
+    <div id="header-left">
+      <!-- Placeholder para el logo UNACH -->
+      <img src="https://placehold.co/150x40/007bff/ffffff?text=UNACH" alt="Logo UNACH">
+      <div id="malla-link">
+        <a href="https://www.unach.cl/wp-content/uploads/2022/11/Qui%CC%81micayFarmacia-2023.pdf" target="_blank">
+          Malla QyF
+        </a>
+      </div>
+    </div>
+    <div id="header-title">
+      <!-- Título principal ahora es un enlace -->
+      <a href="https://www.unach.cl/quimica-y-farmacia/" target="_blank" id="unach-qf-link">
+        Química y Farmacia
+      </a><br>
+      <!-- Nombre de la universidad con tamaño de fuente más grande -->
+      <span id="university-name">Universidad Adventista de Chile</span>
+    </div>
+    <div id="header-right">
+      Zoom <input id="zoom" type="range" min="50" max="150" value="100"/>%
+      <label for="theme-selector">Tema:</label>
+      <select id="theme-selector">
+        <option value="light">Claro</option>
+        <option value="dark">Oscuro</option>
+        <option value="pastel">Pastel</option>
+        <option value="celeste">Celeste</option>
+        <option value="rosado">Rosado</option>
+        <option value="verde">Verde</option>
+      </select>
+      <div id="clock"></div>
+      <!-- User Panel -->
+      <div id="user-panel">
+        <button id="login-btn" class="user-btn">Iniciar Sesión</button>
+        <div id="login-dropdown">
+            <h4>Iniciar Sesión</h4>
+            <input type="email" id="login-email" placeholder="Correo electrónico" required>
+            <input type="password" id="login-password" placeholder="Contraseña" required>
+            <button id="login-submit-btn" class="btn-login">Ingresar</button>
+            <button id="google-login-btn" class="btn-google">
+                <i class="fab fa-google"></i> <!-- Icono de Google -->
+                <span>Ingresar con Google</span>
+            </button>
+            <div class="form-footer">
+                <p>¿No tienes cuenta? <a id="create-account-link">Crea una aquí</a></p>
+            </div>
+        </div>
+        <div id="user-info">
+            <span id="user-name"></span>
+            <button id="logout-btn" class="user-btn">Salir</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- BARRA SECUNDARIA -->
+  <div id="topbar">
+    <div id="topbar-controls">
+      <!-- Botón de información del tr._nico -->
+      <button id="tr-nico-info-btn" class="btn-info">?</button>
+      <span>Progreso: <span id="contador">0%</span></span>
+      <div id="creditos-info">
+        Créditos Totales: <span id="creditos-total">0</span>/330
+      </div>
+      <input id="buscador" type="text" placeholder="Buscar asignatura…"/>
+      <select id="area-filter">
+        <option value="">Todas Áreas</option>
+        <option value="espiritual">Espiritual</option>
+        <option value="general">General</option>
+        <option value="profesional">Profesional</option>
+        <option value="especialidad">Especialidad</option>
+        <option value="practica">Práctica</option>
+      </select>
+      
+      <!-- Nuevo Menú Desplegable para Guardar/Exportar -->
+      <div class="dropdown-container">
+        <button class="topbar-button">Guardar y Exportar</button>
+        <div class="dropdown-menu">
+            <button id="export-pdf-btn">Descargar Malla como PDF</button>
+            <button id="export-json-btn">Exportar Progreso (Archivo)</button>
+            <button id="import-json-btn">Importar Progreso (Archivo)</button>
+            <input type="file" id="import-file" accept=".json" style="display: none;">
+        </div>
+      </div>
+
+      <button id="reset-btn">Reiniciar</button>
+      
+      <!-- Sección de Información Combinada -->
+      <details id="combined-info">
+        <summary>Información de la Carrera</summary>
+        <div>
+          <ul>
+            <li>Sede: Chillán</li>
+            <li>Modalidad: Presencial</li>
+            <li>Jornada: Diurna</li>
+            <li>Arancel 2025: $5.346.000</li>
+            <li>Matrícula: $275.000</li>
+            <li>Código de postulación: 58202</li>
+            <li>Duración: 11 Semestres</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div id="content-wrapper">
+    <!-- Barra lateral izquierda con Leyenda y Widgets -->
+    <div id="left-sidebar">
+      <!-- LEYENDA ÁREAS -->
+      <div id="legend">
+        <table>
+          <tr><th>ÁREAS DE FORMACIÓN</th></tr>
+          <tr data-area="espiritual"><td><span class="dot area-espiritual"></span>Espiritual<span id="creditos-espiritual">0/0</span></td></tr>
+          <tr data-area="general"><td><span class="dot area-general"></span>General<span id="creditos-general">0/0</span></td></tr>
+          <tr data-area="profesional"><td><span class="dot area-profesional"></span>Profesional<span id="creditos-profesional">0/0</span></td></tr>
+          <tr data-area="especialidad"><td><span class="dot area-especialidad"></span>Especialidad<span id="creditos-especialidad">0/0</span></td></tr>
+          <tr data-area="practica"><td><span class="dot area-practica"></span>Práctica<span id="creditos-practica">0/0</span></td></tr>
+        </table>
+      </div>
+
+      <!-- Panel de Widgets -->
+      <div id="widgets-panel">
+        <h3>Recursos Rápidos</h3>
+        <div class="widget-card">
+          <h4>Drive de la Carrera</h4>
+          <a href="https://drive.google.com/drive/folders/1ts_jjP9MPqLo5sXeXgoDHL8_3fO_DXCm?hl=es" target="_blank">Acceder al Drive</a>
+        </div>
+        <div class="widget-card">
+          <h4>Biblioteca UNACH</h4>
+          <a href="https://biblioteca.unach.cl/basesdatossuscritas/" target="_blank">Ir a la Biblioteca</a>
+        </div>
+        <div class="widget-card">
+          <h4>Google Académico</h4>
+          <a href="https://scholar.google.es/?hl=es" target="_blank">Buscar Artículos</a>
+        </div>
+        <div class="widget-card calc-box">
+            <a href="https://calculatodo.com/calcular-promedio-ponderado-notas" target="_blank">
+            Calcular mi nota para aprobar
+            </a>
+        </div>
+        <div class="widget-card calc-box">
+            <a href="https://escaladenotas.cl/" target="_blank">
+            Calcular nota según puntaje
+            </a>
+        </div>
+        <details class="widget-card" id="calendar-widget">
+          <summary><h4>Calendario</h4></summary>
+          <div id="calendar-content">
+            <div id="calendar-header">
+              <button id="prev-month">&lt;</button>
+              <h5 id="current-month-year"></h5>
+              <button id="next-month">&gt;</button>
+            </div>
+            <div id="calendar-grid">
+              <div class="day-name">Lun</div>
+              <div class="day-name">Mar</div>
+              <div class="day-name">Mié</div>
+              <div class="day-name">Jue</div>
+              <div class="day-name">Vie</div>
+              <div class="day-name">Sáb</div>
+              <div class="day-name">Dom</div>
+              <!-- Days will be generated here by JS -->
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- MALLA -->
+    <div id="malla-container">
+      <div id="malla">
+        <!-- Años y semestres se mantienen igual -->
+        <!-- Año 1 -->
+        <div class="year" data-year="1">
+          <div class="year-label">
+            <span>1° AÑO</span>
+            <div class="horas-sellos-btn">Horas sellos requeridas 25</div>
+          </div>
+          <div class="semestre" data-sem="1">
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="ramo" data-code="QYFCCR600" data-area="espiritual" data-creditos="2" data-desc="Estudio de la cosmovisión cristiana y su impacto en la vida y la ciencia.">
+              <span class="dot area-espiritual"></span>Cosmovisión Cristiana y Revelación
+            </div>
+            <div class="ramo" data-code="QYFMPF600" data-area="profesional" data-creditos="5" data-desc="Fundamentos matemáticos esenciales para las ciencias farmacéuticas.">
+              <span class="dot area-profesional"></span>Matemática para Farmacia
+            </div>
+            <div class="ramo" data-code="QYFMYE600" data-area="profesional" data-creditos="5" data-desc="Estudio de la morfología, histología y embriología humana.">
+              <span class="dot area-profesional"></span>Morfohistología y Embriología
+            </div>
+            <div class="ramo" data-code="QYFQGE601" data-area="profesional" data-creditos="6" data-desc="Principios fundamentales de la química general.">
+              <span class="dot area-profesional"></span>Química General I
+            </div>
+            <div class="ramo" data-code="QYFFPF600" data-area="profesional" data-creditos="5" data-desc="Conceptos de física aplicados a la farmacia.">
+              <span class="dot area-profesional"></span>Física para Farmacia
+            </div>
+            <div class="ramo" data-code="QYFICF600" data-area="profesional" data-creditos="2" data-desc="Introducción a las Ciencias Farmacéuticas.">
+              <span class="dot area-profesional"></span>Introducción a las Ciencias Farmacéuticas
+            </div>
+            <div class="ramo" data-code="QYFING601" data-area="general" data-creditos="2" data-desc="Desarrollo de habilidades básicas en el idioma inglés.">
+              <span class="dot area-general"></span>Inglés I
+            </div>
+            <div class="ramo" data-code="QYFTAP601" data-area="general" data-creditos="3" data-desc="Taller para el desarrollo de habilidades de estudio y aprendizaje.">
+              <span class="dot area-general"></span>Taller de Habilidades de Aprendizaje I
+            </div>
+          </div>
+          <div class="semestre" data-sem="2">
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="ramo" data-code="QYFATB600" data-area="espiritual" data-creditos="2" data-desc="Análisis de la naturaleza humana desde una perspectiva bíblica.">
+              <span class="dot area-espiritual"></span>Antropología Bíblica
+            </div>
+            <div class="ramo" data-code="QYFFQF600" data-req="QYFFPF600" data-area="profesional" data-creditos="5" data-desc="Estudio de los principios fisicoquímicos relevantes para la farmacia.">
+              <span class="dot area-profesional"></span>Físicoquímica para Farmacia
+            </div>
+            <div class="ramo" data-code="QYFAPF600"  data-req="QYFMYE600" data-area="profesional" data-creditos="6" data-desc="Estudio de la anatomía humana aplicada a la farmacia.">
+              <span class="dot area-profesional"></span>Anatomía para Farmacia
+            </div>
+            <div class="ramo" data-code="QYFQGE602" data-req="QYFQGE601" data-area="profesional" data-creditos="6" data-desc="Continuación de los principios de química general, con énfasis en reacciones.">
+              <span class="dot area-profesional"></span>Química General II
+            </div>
+            <div class="ramo" data-code="QYFCYL600" data-area="general" data-creditos="3" data-desc="Desarrollo de habilidades de comunicación efectiva y liderazgo.">
+              <span class="dot area-general"></span>Comunicación y Liderazgo
+            </div>
+            <div class="ramo" data-code="QYFGPF600"  data-req="QYFMYE600" data-area="profesional" data-creditos="3" data-desc="Principios de genética y su aplicación en farmacia.">
+              <span class="dot area-profesional"></span>Genética para Farmacia
+            </div>
+            <div class="ramo" data-code="QYFING602" data-req="QYFING601" data-area="general" data-creditos="2" data-desc="Continuación del desarrollo de habilidades en inglés.">
+              <span class="dot area-general"></span>Inglés II
+            </div>
+            <div class="ramo" data-code="QYFTAP602" data-area="general" data-creditos="3" data-desc="Taller avanzado de habilidades de aprendizaje y gestión del tiempo.">
+              <span class="dot area-general"></span>Taller de Habilidades de Aprendizaje II
+            </div>
+          </div>
+        </div>
+        <!-- Año 2 -->
+        <div class="year" data-year="2">
+          <div class="year-label">
+            <span>2° AÑO</span>
+            <div class="horas-sellos-btn">Horas sellos requeridas 25</div>
+          </div>
+          <div class="semestre" data-sem="3">
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="ramo" data-code="QYFCRE600" data-area="espiritual" data-creditos="2" data-desc="Exploración de la relación entre la ciencia y la fe religiosa.">
+              <span class="dot area-espiritual"></span>Ciencia y Religión
+            </div>
+            <div class="ramo" data-code="QYFBGF600" data-req="QYFMYE600" data-area="profesional" data-creditos="6" data-desc="Estudio de los procesos bioquímicos fundamentales para la farmacia.">
+              <span class="dot area-profesional"></span>Bioquímica General para Farmacia
+            </div>
+            <div class="ramo" data-code="QYFFIF600" data-req="QYFAPF600" data-area="profesional" data-creditos="6" data-desc="Estudio de la fisiología de los sistemas del cuerpo humano.">
+              <span class="dot area-profesional"></span>Fisiología para Farmacia
+            </div>
+            <div class="ramo" data-code="QYFQAN600"  data-req="QYFQGE602" data-area="profesional" data-creditos="6" data-desc="Principios y técnicas de la química analítica.">
+              <span class="dot area-profesional"></span>Química Analítica
+            </div>
+            <div class="ramo" data-code="QYFQOR601" data-req="QYFQGE602" data-area="profesional" data-creditos="6" data-desc="Introducción a la química de compuestos orgánicos.">
+              <span class="dot area-profesional"></span>Química Orgánica I
+            </div>
+            <div class="ramo" data-code="QYFITF600" data-req="QYFING602" data-area="general" data-creditos="3" data-desc="Desarrollo de habilidades de lectura y comprensión de textos técnicos en inglés.">
+              <span class="dot area-general"></span>Inglés Técnico para Farmacia
+            </div>
+            <div class="ramo" data-code="QYFMIP600" data-area="profesional" data-creditos="3" data-desc="Estudio de microorganismos y parásitos de interés farmacéutico.">
+              <span class="dot area-profesional"></span>Microbiología y Parasitología
+            </div>
+            <div class="ramo" data-code="QYFCMP601" data-area="general" data-creditos="1" data-desc="Asignatura complementaria de libre elección.">
+              <span class="dot area-general"></span>Complementario I
+            </div>
+          </div>
+          <div class="semestre" data-sem="4">
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="ramo" data-code="QYFEBI600" data-area="espiritual" data-creditos="2" data-desc="Profundización en las enseñanzas fundamentales de la Biblia.">
+              <span class="dot area-espiritual"></span>Enseñanzas de la Biblia
+            </div>
+            <div class="ramo" data-code="QYFTNA610"  data-req="QYFFIF600" data-area="profesional" data-creditos="6" data-desc="Estudio de diversas terapias naturales y su aplicación.">
+              <span class="dot area-profesional"></span>Terapias Naturales
+            </div>
+            <div class="ramo" data-code="QYFFPF610" data-req="QYFFIF600" data-area="profesional" data-creditos="6" data-desc="Estudio de los mecanismos de las enfermedades y sus manifestaciones.">
+              <span class="dot area-profesional"></span>Fisiopatología para Farmacia
+            </div>
+            <div class="ramo" data-code="QYFAIM610" data-req="QYFQAN600" data-area="profesional" data-creditos="6" data-desc="Análisis de instrumentos y métodos para el control de calidad de medicamentos.">
+              <span class="dot area-profesional"></span>Análisis Instrumental y de Medicamentos
+            </div>
+            <div class="ramo" data-code="QYFQOR602" data-req="QYFQOR601" data-area="profesional" data-creditos="6" data-desc="Continuación de la química orgánica, con énfasis en reacciones y síntesis.">
+              <span class="dot area-profesional"></span>Química Orgánica II
+            </div>
+            <div class="ramo" data-code="QYFCMP602"  data-req="QYFCMP601" data-area="general" data-creditos="1" data-desc="Asignatura complementaria de libre elección.">
+              <span class="dot area-general"></span>Complementario II
+            </div>
+          </div>
+        </div>
+        <!-- Año 3 -->
+        <div class="year" data-year="3">
+          <div class="year-label">
+            <span>3° AÑO</span>
+            <div class="horas-sellos-btn">Horas sellos requeridas 25</div>
+          </div>
+          <div class="semestre" data-sem="5">
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="ramo" data-code="QYFFYS600" data-area="espiritual" data-creditos="2" data-desc="Análisis de la estructura y dinámica de la familia y la sociedad.">
+              <span class="dot area-espiritual"></span>Familia y Sociedad
+            </div>
+            <div class="ramo" data-code="QYFIYH600"  data-req="QYFFPF610" data-area="profesional" data-creditos="5" data-desc="Estudio del sistema inmune y los componentes de la sangre.">
+              <span class="dot area-profesional"></span>Inmunología y Hematología
+            </div>
+            <div class="ramo" data-code="QYFLFA600" data-req="QYFICF600" data-area="especialidad" data-creditos="4" data-desc="Marco legal que rige la actividad farmacéutica y la autoridad sanitaria.">
+              <span class="dot area-especialidad"></span>Legislación Farmacéutica y Autorización Sanitaria
+            </div>
+            <div class="ramo" data-code="QYFFAQ601" data-req="QYFFQF600,QYFQOR602" data-area="profesional" data-creditos="6" data-desc="Estudio de la relación entre la estructura química y la actividad biológica de los fármacos.">
+              <span class="dot area-profesional"></span>Farmacoquímica I
+            </div>
+            <div class="ramo" data-code="QYFFAR611"  data-req="QYFFPF610" data-area="profesional" data-creditos="6" data-desc="Introducción a los principios de la farmacología y acción de los fármacos.">
+              <span class="dot area-profesional"></span>Farmacología I
+            </div>
+            <div class="ramo" data-code="QYFTFA601" data-req="QYFQOR602" data-area="profesional" data-creditos="6" data-desc="Principios de formulación y producción de formas farmacéuticas.">
+              <span class="dot area-profesional"></span>Tecnología Farmacéutica I
+            </div>
+            <div class="ramo" data-code="QYFCMP603"  data-req="QYFCMP602" data-area="general" data-creditos="1" data-desc="Asignatura complementaria de libre elección.">
+              <span class="dot area-general"></span>Complementario III
+            </div>
+          </div>
+          <div class="semestre" data-sem="6">
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="ramo" data-code="QYFSRS600" data-area="general" data-creditos="2" data-desc="Importancia del autocuidado, responsabilidad social y medioambiente.">
+              <span class="dot area-general"></span>Salud y Autocuidado, Responsabilidad Social y Medioambiente
+            </div>
+            <div class="ramo" data-code="QYFBQC600"  data-req="QYFBGF600" data-area="profesional" data-creditos="4" data-desc="Aplicación de la bioquímica en el diagnóstico y seguimiento clínico.">
+              <span class="dot area-profesional"></span>Bioquímica Clínica
+            </div>
+            <div class="ramo" data-code="QYFNBC600" data-area="profesional" data-creditos="5" data-desc="Estudio de la nutrición y el análisis de alimentos en el contexto clínico.">
+              <span class="dot area-profesional"></span>Nutrición y Bromatología Clínicas
+            </div>
+            <div class="ramo" data-code="QYFFAR612"  data-req="QYFFAR611" data-area="profesional" data-creditos="6" data-desc="Profundización en la farmacología de diferentes sistemas orgánicos.">
+              <span class="dot area-profesional"></span>Farmacología II
+            </div>
+            <div class="ramo" data-code="QYFFAQ602" data-req="QYFFAQ601" data-area="profesional" data-creditos="6" data-desc="Continuación del estudio de la relación estructura-actividad de los fármacos.">
+              <span class="dot area-profesional"></span>Farmacoquímica II
+            </div>
+            <div class="ramo" data-code="QYFTFA602" data-req="QYFTFA601" data-area="profesional" data-creditos="6" data-desc="Formulación y evaluación de formas farmacéuticas avanzadas.">
+              <span class="dot area-profesional"></span>Tecnología Farmacéutica II
+            </div>
+            <div class="ramo" data-code="QYFCMP604"  data-req="QYFCMP603" data-area="general" data-creditos="1" data-desc="Asignatura complementaria de libre elección.">
+              <span class="dot area-general"></span>Complementario IV
+            </div>
+          </div>
+        </div>
+        <!-- Año 4 -->
+        <div class="year" data-year="4">
+          <div class="year-label">
+            <span>4° AÑO</span>
+            <div class="horas-sellos-btn">Horas sellos requeridas 25</div>
+          </div>
+          <div class="semestre" data-sem="7">
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="ramo" data-code="QYFMYS600" data-area="espiritual" data-creditos="2" data-desc="Principios de misión y servicio en el contexto cristiano.">
+              <span class="dot area-espiritual"></span>Misión y Servicio
+            </div>
+            <div class="ramo" data-code="QYFMIF600" data-area="profesional" data-creditos="3" data-desc="Diseño y ejecución de proyectos de investigación en farmacia.">
+              <span class="dot area-profesional"></span>Metodología de la Investigación para Farmacia
+            </div>
+            <div class="ramo" data-code="QYFTOX600"  data-req="QYFFAR612" data-area="especialidad" data-creditos="6" data-desc="Estudio de los efectos tóxicos de sustancias y su manejo.">
+              <span class="dot area-especialidad"></span>Toxicología
+            </div>
+            <div class="ramo" data-code="QYFFCA600" data-req="QYFFAR612" data-area="especialidad" data-creditos="5" data-desc="Rol del farmacéutico en la comunidad y atención asistencial.">
+              <span class="dot area-especialidad"></span>Farmacia Comunitaria y Asistencial
+            </div>
+            <div class="ramo" data-code="QYFFGN600" data-area="especialidad" data-creditos="5" data-desc="Estudio de fármacos de origen natural.">
+              <span class="dot area-especialidad"></span>Farmacognosia
+            </div>
+            <div class="ramo" data-code="QYFTCO600"  data-req="QYFTFA602" data-area="profesional" data-creditos="5" data-desc="Principios y formulación de productos cosméticos.">
+              <span class="dot area-profesional"></span>Tecnología Cosmética
+            </div>
+            <div class="ramo" data-code="QYFPLC600" data-req="QYFIYH600,QYFMIP600" data-area="practica" data-creditos="4" data-desc="Práctica en laboratorio clínico, realizando análisis y diagnósticos.">
+              <span class="dot area-practica"></span>Práctica Laboratorio Clínico
+            </div>
+          </div>
+          <div class="semestre" data-sem="8">
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="ramo" data-code="QYFEVP600" data-area="espiritual" data-creditos="2" data-desc="Análisis de la ética y valores en el ejercicio profesional.">
+              <span class="dot area-espiritual"></span>Ética y Vida Profesional
+            </div>
+            <div class="ramo" data-code="QYFBEA600" data-area="profesional" data-creditos="4" data-desc="Aplicación de métodos estadísticos en la investigación farmacéutica.">
+              <span class="dot area-profesional"></span>Bioestadística Aplicada
+            </div>
+            <div class="ramo" data-code="QYFFVT600" data-req="QYFLFA600" data-area="especialidad" data-creditos="4" data-desc="Sistemas de vigilancia de la seguridad de medicamentos y tecnologías.">
+              <span class="dot area-especialidad"></span>Farmacovigilancia y Tecnovigilancia
+            </div>
+            <div class="ramo" data-code="QYFFCL601" data-req="QYFFCA600" data-area="especialidad" data-creditos="6" data-desc="Aplicación de conocimientos farmacológicos en casos clínicos.">
+              <span class="dot area-especialidad"></span>Farmacia Clínica I
+            </div>
+            <div class="ramo" data-code="QYFSPE600" data-req="QYFMIP600" data-area="profesional" data-creditos="5" data-desc="Principios de salud pública y epidemiología.">
+              <span class="dot area-profesional"></span>Salud Pública y Epidemiología
+            </div>
+            <div class="ramo" data-code="QYFCCA610"  data-req="QYFTCO600" data-area="profesional" data-creditos="5" data-desc="Métodos y normas para el control de calidad de productos farmacéuticos.">
+              <span class="dot area-profesional"></span>Control de Calidad
+            </div>
+            <div class="ramo" data-code="QYFPFP600" data-req="QYFFCA600" data-area="practica" data-creditos="4" data-desc="Práctica profesional en farmacias privadas.">
+              <span class="dot area-practica"></span>Práctica Farmacia Privada
+            </div>
+          </div>
+        </div>
+        <!-- Año 5 -->
+        <div class="year" data-year="5">
+          <div class="year-label">
+            <span>5° AÑO</span>
+            <div class="horas-sellos-btn">Horas sellos requeridas 25</div>
+          </div>
+          <div class="semestre" data-sem="9">
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="ramo" data-code="QYFEDF610" data-area="especialidad" data-creditos="2" data-desc="Asignatura electiva para profundizar en un área específica de la farmacia.">
+              <span class="dot area-especialidad"></span>Electivo de Farmacia
+            </div>
+            <div class="ramo" data-code="QYFFCP600" data-area="profesional" data-creditos="3" data-desc="Análisis económico de medicamentos y procesos de compra pública.">
+              <span class="dot area-profesional"></span>Farmacoeconomía y Compras Públicas
+            </div>
+            <div class="ramo" data-code="QYFFCA610" data-req="QYFFCL601" data-area="especialidad" data-creditos="6" data-desc="Aplicación de la farmacocinética en la práctica clínica.">
+              <span class="dot area-especialidad"></span>Farmacocinética Aplicada
+            </div>
+            <div class="ramo" data-code="QYFAFS600" data-req="QYFFCL602" data-area="especialidad" data-creditos="6" data-desc="Seguimiento farmacoterapéutico y atención farmacéutica personalizada.">
+              <span class="dot area-especialidad"></span>Atención Farmacéutica y Seguimiento Farmacológico
+            </div>
+            <div class="ramo" data-code="QYFFCL602" data-req="QYFFCL601" data-area="especialidad" data-creditos="6" data-desc="Casos clínicos avanzados y manejo de terapias farmacológicas.">
+              <span class="dot area-especialidad"></span>Farmacia Clínica II
+            </div>
+            <div class="ramo" data-code="QYFFGE600" data-req="QYFFCL602" data-area="especialidad" data-creditos="4" data-desc="Manejo farmacológico en pacientes geriátricos.">
+              <span class="dot area-especialidad"></span>Farmacogeriatría
+            </div>
+            <div class="ramo" data-code="QYFOCP600" data-req="QYFFCL601" data-area="especialidad" data-creditos="5" data-desc="Manejo farmacológico en oncología y cuidados paliativos.">
+              <span class="dot area-especialidad"></span>Oncoterapia y Cuidados Paliativos
+            </div>
+            <div class="ramo" data-code="QYFSME600" data-area="profesional" data-creditos="4" data-desc="Introducción a la salud mental y su relación con la farmacología.">
+              <span class="dot area-profesional"></span>Salud Mental
+            </div>
+            <div class="ramo" data-code="QYFPFC600" data-req="QYFPFP600" data-area="practica" data-creditos="4" data-desc="Práctica en farmacias comunitarias y atención primaria de salud.">
+              <span class="dot area-practica"></span>Práctica en Farmacia Comunitaria APS
+            </div>
+          </div>
+          <div class="semestre" data-sem="10">
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="ramo" data-code="QYFTFC641" data-req="QYFMIF600" data-area="profesional" data-creditos="7" data-desc="Taller de Formulación y Control de Calidad I.">
+              <span class="dot area-profesional"></span>TFC I
+            </div>
+            <div class="ramo" data-code="QYFTFC642" data-req="QYFTFC641" data-area="profesional" data-creditos="9" data-desc="Taller de Formulación y Control de Calidad II.">
+              <span class="dot area-profesional"></span>TFC II
+            </div>
+            <div class="ramo" data-code="QYFPFA610" data-req="QYFPLC600" data-area="practica" data-creditos="4" data-desc="Práctica profesional en farmacias asistenciales (hospitales, clínicas).">
+              <span class="dot area-practica"></span>Práctica Farmacia Asistencial
+            </div>
+          </div>
+        </div>
+        <!-- Año 6 -->
+        <div class="year" data-year="6">
+          <div class="year-label">
+            <span>6° AÑO</span>
+            <div class="horas-sellos-btn">Horas sellos requeridas 25</div>
+          </div>
+          <div class="semestre" data-sem="11">
+            <div class="progress"><div class="progress-fill"></div></div>
+            <div class="ramo" data-code="QYFPRO636" data-req="QYFAFS600,QYFFCA610,QYFFCP600,QYFFGE600,QYFOCP600,QYFPFA610,QYFSME600,QYFTFC642" data-area="practica" data-creditos="30" data-desc="Práctica profesional intensiva en un entorno farmacéutico.">
+              <span class="dot area-practica"></span>Práctica Profesional/Internado
+            </div>
+          </div>
+          <div class="semestre empty"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Información de Ramo -->
+  <div id="ramo-info-modal" class="modal-backdrop">
+    <div class="modal-content">
+      <button class="modal-close-button">&times;</button>
+      <h3 class="modal-title" id="modal-ramo-nombre"></h3>
+      <div class="modal-info">
+        <p><strong>Código:</strong> <span id="modal-ramo-code"></span></p>
+        <p><strong>Área:</strong> <span id="modal-ramo-area"></span></p>
+        <p><strong>Créditos:</strong> <span id="modal-ramo-creditos"></span></p>
+        <p><strong>Prerrequisitos:</strong> <span id="modal-ramo-req"></span></p>
+        <p><strong>Descripción:</strong> <span id="modal-ramo-desc"></span></p>
+      </div>
+      <div class="modal-buttons">
+        <button id="modal-btn-aprobado" class="btn-aprobado">Marcar como Aprobado</button>
+        <button id="modal-btn-desmarcar" class="btn-desmarcar">Desmarcar</button>
+        <button id="modal-btn-close" class="btn-close">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Registro de Usuario -->
+    <div id="register-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <button class="modal-close-button">&times;</button>
+            <h3 class="modal-title">Crear una Cuenta</h3>
+            <input type="email" id="register-email" placeholder="Correo electrónico" required>
+            <input type="password" id="register-password" placeholder="Contraseña (mín. 6 caracteres)" required>
+            <div class="modal-buttons" style="justify-content: center; flex-direction: column; gap: 10px;">
+                <button id="register-submit-btn" class="btn-aprobado">Registrarse</button>
+                <button id="google-register-btn" class="btn-google">
+                    <i class="fab fa-google"></i> <!-- Icono de Google -->
+                    <span>Registrarse con Google</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+  <!-- Modal de Confirmación Personalizado (para Reiniciar) -->
+  <div id="custom-confirm-modal" class="modal-backdrop custom-confirm-modal">
+    <div class="modal-content">
+      <button class="modal-close-button">&times;</button>
+      <h3 class="modal-title">Reiniciar Progreso</h3>
+      <p id="confirm-message">¿Estás seguro de que quieres reiniciar todo el progreso? Esto no se puede deshacer.</p>
+      <div class="modal-buttons">
+        <button id="confirm-reset-yes" class="btn-desmarcar">Sí, reiniciar</button>
+        <button id="confirm-reset-no" class="btn-close">No, cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nuevo Modal para el Mensaje del Tr._nico -->
+  <div id="tr-nico-message-modal" class="modal-backdrop custom-alert-modal">
+    <div class="modal-content">
+      <button class="modal-close-button">&times;</button>
+      <h3 class="modal-title">Mensaje Especial</h3>
+      <p>Regalito del tr._nico para mis compañeros químicos farmacéuticos.</p>
+      <div class="modal-buttons">
+        <button class="btn-close" id="tr-nico-modal-close-btn">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nuevo Modal de Felicidades por Semestre Completado -->
+  <div id="semester-complete-modal" class="modal-backdrop">
+    <div class="modal-content">
+      <button class="modal-close-button">&times;</button>
+      <h3 class="modal-title">¡FELICIDADES!</h3>
+      <p id="semester-complete-message"></p>
+      <div class="modal-buttons">
+        <button class="btn-close" id="semester-complete-modal-close-btn">¡Entendido!</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Librerías JS al final del body para mejor rendimiento -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Enlace al archivo JavaScript externo -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>
