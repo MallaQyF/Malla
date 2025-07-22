@@ -7,16 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-  <!-- Enlace al archivo CSS externo -->
   <link rel="stylesheet" href="style.css">
-  <!-- Font Awesome para iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <!-- HEADER PRINCIPAL -->
   <header id="main-header">
     <div id="header-left">
-      <!-- Logo UNACH actualizado -->
       <img src="logo-unach.png" alt="Logo UNACH" style="height: 45px;">
       <div id="malla-link">
         <a href="https://www.unach.cl/wp-content/uploads/2022/11/Qui%CC%81micayFarmacia-2023.pdf" target="_blank">
@@ -25,11 +21,9 @@
       </div>
     </div>
     <div id="header-title">
-      <!-- Título principal ahora es un enlace -->
       <a href="https://www.unach.cl/quimica-y-farmacia/" target="_blank" id="unach-qf-link">
         Química y Farmacia
       </a><br>
-      <!-- Nombre de la universidad con tamaño de fuente más grande -->
       <span id="university-name">Universidad Adventista de Chile</span>
     </div>
     <div id="header-right">
@@ -44,7 +38,6 @@
         <option value="verde">Verde</option>
       </select>
       <div id="clock"></div>
-      <!-- User Panel -->
       <div id="user-panel">
         <button id="login-btn" class="user-btn">Iniciar Sesión</button>
         <div id="login-dropdown">
@@ -53,7 +46,7 @@
             <input type="password" id="login-password" placeholder="Contraseña" required>
             <button id="login-submit-btn" class="btn-login">Ingresar</button>
             <button id="google-login-btn" class="btn-google">
-                <i class="fab fa-google"></i> <!-- Icono de Google -->
+                <i class="fab fa-google"></i>
                 <span>Ingresar con Google</span>
             </button>
             <div class="form-footer">
@@ -67,11 +60,8 @@
       </div>
     </div>
   </header>
-
-  <!-- BARRA SECUNDARIA -->
   <div id="topbar">
     <div id="topbar-controls">
-      <!-- Botón de información del tr._nico -->
       <button id="tr-nico-info-btn" class="btn-info">?</button>
       <span>Progreso: <span id="contador">0%</span></span>
       <div id="creditos-info">
@@ -86,8 +76,6 @@
         <option value="especialidad">Especialidad</option>
         <option value="practica">Práctica</option>
       </select>
-      
-      <!-- Nuevo Menú Desplegable para Guardar/Exportar -->
       <div class="dropdown-container">
         <button class="topbar-button">Guardar y Exportar</button>
         <div class="dropdown-menu">
@@ -97,10 +85,7 @@
             <input type="file" id="import-file" accept=".json" style="display: none;">
         </div>
       </div>
-
       <button id="reset-btn">Reiniciar</button>
-      
-      <!-- Sección de Información Combinada -->
       <details id="combined-info">
         <summary>Información de la Carrera</summary>
         <div>
@@ -117,12 +102,8 @@
       </details>
     </div>
   </div>
-
-  <!-- CONTENIDO PRINCIPAL -->
   <div id="content-wrapper">
-    <!-- Barra lateral izquierda con Leyenda y Widgets -->
     <div id="left-sidebar">
-      <!-- LEYENDA ÁREAS -->
       <div id="legend">
         <table>
           <tr><th>ÁREAS DE FORMACIÓN</th></tr>
@@ -133,8 +114,6 @@
           <tr data-area="practica"><td><span class="dot area-practica"></span>Práctica<span id="creditos-practica">0/0</span></td></tr>
         </table>
       </div>
-
-      <!-- Panel de Widgets -->
       <div id="widgets-panel">
         <h3>Recursos Rápidos</h3>
         <div class="widget-card">
@@ -168,18 +147,13 @@
               <button id="next-month">&gt;</button>
             </div>
             <div id="calendar-grid">
-              <!-- Days will be generated here by JS -->
             </div>
           </div>
         </details>
       </div>
     </div>
-
-    <!-- MALLA -->
     <div id="malla-container">
       <div id="malla">
-        <!-- Años y semestres se mantienen igual -->
-        <!-- Año 1 -->
         <div class="year" data-year="1">
           <div class="year-label">
             <span>1° AÑO</span>
@@ -240,7 +214,6 @@
             </div>
           </div>
         </div>
-        <!-- Año 2 -->
         <div class="year" data-year="2">
           <div class="year-label">
             <span>2° AÑO</span>
@@ -295,7 +268,6 @@
             </div>
           </div>
         </div>
-        <!-- Año 3 -->
         <div class="year" data-year="3">
           <div class="year-label">
             <span>3° AÑO</span>
@@ -350,7 +322,6 @@
             </div>
           </div>
         </div>
-        <!-- Año 4 -->
         <div class="year" data-year="4">
           <div class="year-label">
             <span>4° AÑO</span>
@@ -405,7 +376,6 @@
             </div>
           </div>
         </div>
-        <!-- Año 5 -->
         <div class="year" data-year="5">
           <div class="year-label">
             <span>5° AÑO</span>
@@ -454,7 +424,6 @@
             </div>
           </div>
         </div>
-        <!-- Año 6 -->
         <div class="year" data-year="6">
           <div class="year-label">
             <span>6° AÑO</span>
@@ -471,8 +440,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Modal de Información de Ramo -->
   <div id="ramo-info-modal" class="modal-backdrop">
     <div class="modal-content">
       <button class="modal-close-button">&times;</button>
@@ -491,9 +458,7 @@
       </div>
     </div>
   </div>
-
-  <!-- Modal de Registro de Usuario -->
-    <div id="register-modal" class="modal-backdrop">
+  <div id="register-modal" class="modal-backdrop">
         <div class="modal-content">
             <button class="modal-close-button">&times;</button>
             <h3 class="modal-title">Crear una Cuenta</h3>
@@ -502,15 +467,12 @@
             <div class="modal-buttons" style="justify-content: center; flex-direction: column; gap: 10px;">
                 <button id="register-submit-btn" class="btn-aprobado">Registrarse</button>
                 <button id="google-register-btn" class="btn-google">
-                    <i class="fab fa-google"></i> <!-- Icono de Google -->
+                    <i class="fab fa-google"></i>
                     <span>Registrarse con Google</span>
                 </button>
             </div>
         </div>
     </div>
-
-
-  <!-- Modal de Confirmación Personalizado (para Reiniciar) -->
   <div id="custom-confirm-modal" class="modal-backdrop custom-confirm-modal">
     <div class="modal-content">
       <button class="modal-close-button">&times;</button>
@@ -522,8 +484,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Nuevo Modal para el Mensaje del Tr._nico -->
   <div id="tr-nico-message-modal" class="modal-backdrop custom-alert-modal">
     <div class="modal-content">
       <button class="modal-close-button">&times;</button>
@@ -534,8 +494,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Nuevo Modal de Felicidades por Semestre Completado -->
   <div id="semester-complete-modal" class="modal-backdrop">
     <div class="modal-content">
       <button class="modal-close-button">&times;</button>
@@ -546,12 +504,8 @@
       </div>
     </div>
   </div>
-  
-  <!-- Librerías JS al final del body para mejor rendimiento -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <!-- Enlace al archivo JavaScript externo -->
   <script type="module" src="script.js"></script>
 </body>
 </html>
