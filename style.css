@@ -1,835 +1,1041 @@
-// Importa las funciones necesarias de los SDK de Firebase desde la CDN oficial
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-    getAuth, 
-    onAuthStateChanged,
-    GoogleAuthProvider,
-    signInWithPopup,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { 
-    getFirestore, 
-    doc, 
-    setDoc, 
-    getDoc 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// ====================================================================================
-// IMPORTANTE: CONFIGURACIÓN DE FIREBASE
-// Esta sección conecta tu aplicación con tu proyecto de Firebase.
-// ====================================================================================
-
-// Tu configuración de Firebase. La he actualizado con la que me proporcionaste.
-const firebaseConfig = {
-  apiKey: "AIzaSyB9hwF9I4dBCBzGM3OGeJ9oX8brt2TD3uQ",
-  authDomain: "malla-cc1d4.firebaseapp.com",
-  projectId: "malla-cc1d4",
-  storageBucket: "malla-cc1d4.firebasestorage.app",
-  messagingSenderId: "735688411229",
-  appId: "1:735688411229:web:48abd3484d61890451a5b4",
-  measurementId: "G-E03VNP1MT6"
-};
-
-
-// Inicializa los servicios de Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const googleProvider = new GoogleAuthProvider();
-
-// --- Referencias a Elementos del DOM ---
-const ramos = document.querySelectorAll('.ramo');
-const buscador = document.getElementById('buscador');
-const areaFilter = document.getElementById('area-filter');
-const zoomRange = document.getElementById('zoom');
-const clockElement = document.getElementById('clock');
-const themeSelector = document.getElementById('theme-selector');
-const mallaContainer = document.getElementById('malla-container');
-
-// Elementos de la UI de Autenticación
-const loginBtn = document.getElementById('login-btn');
-const loginDropdown = document.getElementById('login-dropdown');
-const loginEmailInput = document.getElementById('login-email');
-const loginPasswordInput = document.getElementById('login-password');
-const loginSubmitBtn = document.getElementById('login-submit-btn');
-const googleLoginBtn = document.getElementById('google-login-btn');
-const createAccountLink = document.getElementById('create-account-link');
-const userInfoDiv = document.getElementById('user-info');
-const userNameSpan = document.getElementById('user-name');
-const logoutBtn = document.getElementById('logout-btn');
-
-// Elementos del Modal de Registro
-const registerModal = document.getElementById('register-modal');
-const registerEmailInput = document.getElementById('register-email');
-const registerPasswordInput = document.getElementById('register-password');
-const registerSubmitBtn = document.getElementById('register-submit-btn');
-const googleRegisterBtn = document.getElementById('google-register-btn');
-
-// Otros Modales
-const ramoInfoModal = document.getElementById('ramo-info-modal');
-const customConfirmModal = document.getElementById('custom-confirm-modal');
-const trNicoMessageModal = document.getElementById('tr-nico-message-modal');
-const semesterCompleteModal = document.getElementById('semester-complete-modal');
-
-// --- Variables de Estado de la Aplicación ---
-let currentUser = null;
-let aprobados = new Set();
-let completedSem = new Set();
-let completedYear = new Set();
-const totalRamos = ramos.length;
-
-// --- Funciones de Persistencia de Datos (Firebase y LocalStorage) ---
-
-/**
- * Guarda los datos del usuario (ramos aprobados, semestres/años completados, tema)
- * en Firestore si hay un usuario autenticado, o en LocalStorage como fallback.
- */
-async function saveUserData() {
-    const dataToSave = {
-        aprobados: [...aprobados],
-        completedSem: [...completedSem],
-        completedYear: [...completedYear],
-        theme: themeSelector.value
-    };
-
-    if (!currentUser) {
-        // Si no hay usuario logueado, guarda en localStorage
-        for (const key in dataToSave) {
-            localStorage.setItem(key, JSON.stringify(dataToSave[key]));
+:root {
+  --bg: #f4f7f9;
+  --text: #333;
+  --card: #fff;
+  --accent: #1565C0;
+  --accent2: #42A5F5;
+  --green: #10B981;
+  --yellow: #FACC15;
+  --lila: #9C27B0;
+  --red: #EF5350;
+  --shadow: rgba(0,0,0,0.08);
+  --ramo-bg: #eceff1;
+  --ramo-aprobado-bg: #c8e6c9;
+  --ramo-desbloqueado-bg: #fff8e1;
+  --creditos-bg: rgba(255, 255, 255, 0.8);
+  --success-modal-bg: #e8f5e9;
+  --success-modal-text: #1b5e20;
+}
+body.dark {
+  --bg: #1a1a1a;
+  --text: #eee;
+  --card: #2c2c2c;
+  --accent: #4a90e2;
+  --accent2: #72aeff;
+  --green: #4CAF50;
+  --yellow: #FFEB3B;
+  --lila: #AB47BC;
+  --red: #FF5252;
+  --shadow: rgba(0,0,0,0.4);
+  --ramo-bg: #3c3c3c;
+  --ramo-aprobado-bg: #2e4b30;
+  --ramo-desbloqueado-bg: #5f4b00;
+  --creditos-bg: rgba(44, 44, 44, 0.8);
+  --success-modal-bg: #388e3c;
+  --success-modal-text: #e8f5e9;
+}
+body.pastel {
+  --bg: #f8e1fa;
+  --text: #5d3f6a;
+  --card: #fefefe;
+  --accent: #d8a7e0;
+  --accent2: #e9c3f0;
+  --green: #a7d8b0;
+  --yellow: #f0e68c;
+  --lila: #c3a7e0;
+  --red: #f0a7a7;
+  --shadow: rgba(0,0,0,0.1);
+  --ramo-bg: #f3e9f5;
+  --ramo-aprobado-bg: #e0f0e0;
+  --ramo-desbloqueado-bg: #f5f5e0;
+  --creditos-bg: rgba(254, 254, 254, 0.8);
+  --success-modal-bg: #a7d8b0;
+  --success-modal-text: #5d3f6a;
+}
+body.celeste {
+  --bg: #e0f7fa;
+  --text: #004d40;
+  --card: #ffffff;
+  --accent: #00838f;
+  --accent2: #00acc1;
+  --green: #4db6ac;
+  --yellow: #ffb74d;
+  --lila: #7986cb;
+  --red: #ef5350;
+  --shadow: rgba(0,0,0,0.1);
+  --ramo-bg: #e0f2f7;
+  --ramo-aprobado-bg: #b2ebf2;
+  --ramo-desbloqueado-bg: #ffe0b2;
+  --creditos-bg: rgba(255, 255, 255, 0.8);
+  --success-modal-bg: #4db6ac;
+  --success-modal-text: #004d40;
+}
+body.rosado {
+  --bg: #ffebee;
+  --text: #880e4f;
+  --card: #ffffff;
+  --accent: #c2185b;
+  --accent2: #e91e63;
+  --green: #a5d6a7;
+  --yellow: #ffcc80;
+  --lila: #ce93d8;
+  --red: #ef9a9a;
+  --shadow: rgba(0,0,0,0.1);
+  --ramo-bg: #fce4ec;
+  --ramo-aprobado-bg: #f8bbd0;
+  --ramo-desbloqueado-bg: #fff9c4;
+  --creditos-bg: rgba(255, 255, 255, 0.8);
+  --success-modal-bg: #e91e63;
+  --success-modal-text: #ffffff;
+}
+body.verde {
+  --bg: #e8f5e9;
+  --text: #1b5e20;
+  --card: #ffffff;
+  --accent: #388e3c;
+  --accent2: #4caf50;
+  --green: #81c784;
+  --yellow: #fff176;
+  --lila: #9ccc65;
+  --red: #ef5350;
+  --shadow: rgba(0,0,0,0.1);
+  --ramo-bg: #e0f2f1;
+  --ramo-aprobado-bg: #c8e6c9;
+  --ramo-desbloqueado-bg: #fffde7;
+  --creditos-bg: rgba(255, 255, 255, 0.8);
+  --success-modal-bg: #4caf50;
+  --success-modal-text: #ffffff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; font-family: 'Inter', sans-serif;
+  background: var(--bg); color: var(--text);
+  transition: background .3s, color .3s;
+  overflow-x: hidden;
+}
+#main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px;
+  background: var(--card);
+  color: var(--text);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px var(--shadow);
+  border-bottom: 4px solid var(--accent);
+  flex-wrap: wrap;
+  gap: 20px;
+}
+#header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+#header-left img {
+  height: 70px;
+  width: auto;
+}
+#malla-link a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 8px 12px;
+  background: var(--ramo-bg);
+  border-radius: 8px;
+  transition: background .2s, color .2s;
+  font-size: 0.9em;
+}
+#malla-link a:hover { 
+  background: var(--accent);
+  color: #fff;
+}
+#header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2em;
+    font-weight: 700;
+    text-align: center;
+    flex-grow: 1;
+    color: var(--accent);
+    line-height: 1.2;
+}
+#unach-qf-link {
+    color: inherit;
+    text-decoration: none;
+}
+#university-name {
+    display: block;
+    font-size: 0.5em;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 4px;
+    font-family: 'Inter', sans-serif;
+}
+#header-right {
+  display: flex; align-items: center; gap: 15px;
+  font-size: .9em;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+#clock {
+    background: var(--ramo-bg);
+    border-radius: 8px;
+    padding: 8px 15px;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+#clock .time {
+    font-family: monospace;
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--accent);
+}
+#clock .date {
+    font-size: 0.8em;
+    font-weight: 600;
+    opacity: 0.7;
+}
+#theme-selector {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: .9em;
+    background: var(--card);
+    color: var(--text);
+}
+#user-panel { position: relative; }
+.user-btn {
+    background: var(--accent);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    transition: background .2s;
+}
+.user-btn:hover { background: var(--accent2); }
+#login-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 8px;
+    background: var(--card);
+    color: var(--text);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px var(--shadow);
+    width: 280px;
+    z-index: 1100;
+    border: 1px solid var(--ramo-bg);
+}
+#login-dropdown.show { display: block; }
+#login-dropdown h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    color: var(--accent);
+}
+#login-dropdown input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--text);
+}
+#login-dropdown button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+#login-dropdown .btn-login {
+    background: var(--accent);
+    color: #fff;
+}
+ #login-dropdown .btn-login:hover { background: var(--accent2); }
+.btn-google {
+    background: #fff;
+    color: #757575;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.btn-google:hover { background: #f5f5f5; }
+.btn-google i {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+#login-dropdown .form-footer {
+    font-size: 0.85em;
+    text-align: center;
+    margin-top: 15px;
+}
+#login-dropdown .form-footer a {
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: none;
+}
+ #login-dropdown .form-footer a:hover { text-decoration: underline; }
+#user-info { display: none; align-items: center; gap: 10px; }
+#user-info #user-name { font-weight: 600; }
+#user-info #logout-btn {
+    background: var(--red);
+    color: white;
+    padding: 8px 12px;
+}
+#topbar {
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px 20px; background: var(--accent);
+  color: #fff; position: sticky; top: 105px;
+  z-index: 900;
+  box-shadow: 0 2px 4px var(--shadow);
+  font-size: .9em;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+#combined-info {
+    background: rgba(255,255,255,0.1);
+    padding: 5px 10px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+#combined-info summary {
+    cursor: pointer;
+    font-weight: 600;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+#combined-info summary::-webkit-details-marker {
+    display: none;
+}
+#combined-info summary:after {
+    content: '\25B6';
+    font-size: 0.8em;
+    margin-left: 8px;
+    transition: transform 0.2s;
+}
+#combined-info[open] summary:after {
+    content: '\25BC';
+}
+#combined-info > div {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 0.85em;
+}
+#combined-info ul {
+  list-style: none; margin: 0; padding-left: 0; font-size: .9em;
+}
+#combined-info ul li {
+    margin-bottom: 4px;
+}
+#combined-info ul li:last-child {
+    margin-bottom: 0;
+}
+#topbar-controls {
+  display: flex; align-items: center; gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-grow: 1;
+}
+#topbar-controls input[type="text"],
+#topbar-controls select {
+  padding: 6px 8px; border: none; border-radius: 4px;
+  font-size: .9em;
+  background: var(--card);
+  color: var(--text);
+}
+#topbar-controls button {
+  background: var(--accent2); border: none; color: #fff;
+  padding: 6px 10px; border-radius: 4px; cursor: pointer;
+  transition: background .2s; font-size: .9em;
+}
+#topbar-controls button:hover { background: #2e7dff; }
+#contador { font-weight: 600; margin-left: 8px; }
+#creditos-info {
+    margin-left: 15px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--creditos-bg);
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px var(--shadow);
+    color: var(--text);
+}
+#creditos-info .dot {
+    display: none;
+}
+#creditos-info span {
+    font-weight: 600;
+}
+#creditos-total {
+    font-size: 1.1em;
+}
+.btn-info {
+    background: var(--accent2);
+    border: none;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background .2s;
+    font-size: .9em;
+    font-weight: 700;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: pulse-info-btn 2s infinite ease-in-out;
+}
+@keyframes pulse-info-btn {
+    0% { transform: scale(1); box-shadow: 0 0 0 rgba(255,255,255,0.4); }
+    50% { transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.1); }
+    100% { transform: scale(1); box-shadow: 0 0 0 rgba(255,255,255,0.4); }
+}
+.btn-info:hover {
+    background: #2e7dff;
+    animation-play-state: paused;
+}
+.dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: var(--card);
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px var(--shadow);
+    z-index: 1;
+    border-radius: 8px;
+    padding: 8px 0;
+    border: 1px solid var(--ramo-bg);
+}
+.dropdown-menu button {
+    color: var(--text);
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.dropdown-menu button:hover {
+    background-color: var(--ramo-bg);
+}
+.dropdown-container:hover .dropdown-menu {
+    display: block;
+}
+#content-wrapper {
+  display: flex; gap: 20px; padding: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+#legend {
+  background: var(--card); padding: 12px; border-radius: 8px;
+  box-shadow: 0 2px 6px var(--shadow); min-width: 180px;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+#legend table { width: 100%; border-collapse: collapse; font-size: .9em; }
+#legend th { padding-bottom: 8px; text-align: left; }
+#legend td { 
+    padding: 4px 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+#legend td.area-completed {
+    background-color: var(--ramo-aprobado-bg);
+    padding-left: 4px;
+    padding-right: 4px;
+}
+#legend td span:last-child { margin-left: auto; font-weight: 600; }
+.dot {
+  display: inline-block; width: 10px; height: 10px;
+  border-radius: 50%; margin-right: 6px; vertical-align: middle;
+}
+.area-espiritual { background: green; }
+.area-general    { background: #00bcd4; }
+.area-profesional{ background: var(--yellow); }
+.area-especialidad { background: var(--lila); }
+.area-practica   { background: red; }
+#left-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 200px;
+  max-width: 250px;
+  flex-shrink: 0;
+  width: 100%;
+}
+#widgets-panel {
+  background: var(--card);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+#widgets-panel h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--accent);
+  text-align: center;
+  font-size: 1.2em;
+}
+.widget-card {
+  padding: 10px;
+  border-radius: 6px;
+  background: var(--ramo-bg);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  text-align: center;
+}
+.widget-card h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--accent2);
+  font-size: 1em;
+}
+.widget-card a {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+.widget-card a:hover {
+  background: #0d47a1;
+}
+.widget-card.calc-box a {
+    background: none;
+    color: var(--accent);
+    font-weight: 600;
+    padding: 0;
+}
+.widget-card.calc-box a:hover {
+    text-decoration: underline;
+}
+#calendar-widget {
+    text-align: left;
+}
+#calendar-widget h4 {
+    text-align: center;
+}
+#calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+#calendar-header button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+#calendar-header button:hover {
+    background: #0d47a1;
+}
+#calendar-header h5 {
+    margin: 0;
+    font-size: 1.1em;
+    color: var(--accent);
+}
+#calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    font-size: 0.85em;
+}
+.day-name {
+    background: var(--accent2);
+    color: white;
+    padding: 5px 0;
+    text-align: center;
+    font-weight: 600;
+}
+.calendar-day {
+    background: var(--ramo-bg);
+    padding: 5px;
+    text-align: center;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+}
+.calendar-day.empty {
+    background: #eee;
+    color: #ccc;
+}
+body.dark .calendar-day.empty {
+    background: #444;
+    color: #777;
+}
+.calendar-day.current-day {
+    background: var(--green);
+    color: white;
+    font-weight: 700;
+}
+#malla-container {
+  overflow: auto; transform-origin: top center;
+  flex-grow: 1;
+}
+#malla {
+  display: flex; flex-direction: column; gap: 24px;
+  width: max-content; margin: auto;
+  padding: 20px;
+  background-color: var(--bg);
+}
+.year {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px,1fr));
+  gap: 20px;
+  background: var(--card);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px var(--shadow);
+  position: relative;
+  transition: border 0.3s, box-shadow 0.3s, background 0.3s;
+}
+.year[data-year-complete] {
+  border: 2px solid gold;
+  box-shadow: 0 0 8px rgba(255,215,0,0.8);
+}
+.year-label {
+  grid-column: 1 / -1;
+  background: linear-gradient(90deg,var(--accent2),var(--accent));
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  font-weight: 600;
+  font-size: 1.1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.horas-sellos-btn {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+.horas-sellos-btn:hover {
+    background: rgba(255,255,255,0.4);
+}
+.semestre {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+.semestre::before {
+  content: attr(data-sem)"° Semestre";
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.progress {
+  width: 100%; height: 8px;
+  background: #ddd;
+  border-radius: 4px;
+  overflow: hidden; margin-bottom: 10px;
+}
+body.dark .progress {
+    background: #555;
+}
+.progress-fill {
+  width: 0; height: 100%;
+  background: var(--green);
+  transition: width .3s;
+}
+.ramo {
+  background: var(--ramo-bg);
+  margin: 6px 0;
+  padding: 8px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s, background .2s, color .2s;
+  border-left: 4px solid transparent;
+  font-size: .95em;
+  display: flex; align-items: center;
+  color: var(--text);
+}
+.ramo .dot { margin-right: 8px; }
+.ramo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+.aprobado {
+  background: var(--ramo-aprobado-bg) !important;
+  border-left-color: var(--green) !important;
+  animation: sparkle-green 0.6s ease-out forwards;
+}
+@keyframes sparkle-green {
+    0% { transform: scale(1); box-shadow: 0 0 0 var(--green); opacity: 1; }
+    50% { transform: scale(1.03); box-shadow: 0 0 15px var(--green), 0 0 30px var(--green); opacity: 0.8; }
+    100% { transform: scale(1); box-shadow: 0 0 0 var(--green); opacity: 1; }
+}
+.desbloqueado {
+  background: var(--ramo-desbloqueado-bg) !important;
+  border-left-color: var(--yellow) !important;
+  animation: pulse-yellow 1.5s infinite alternate ease-in-out;
+}
+@keyframes pulse-yellow {
+    0% { box-shadow: 0 0 0 rgba(250, 204, 21, 0.4); }
+    100% { box-shadow: 0 0 15px rgba(250, 204, 21, 0.8); }
+}
+.error {
+  animation: shake .3s;
+  background: var(--red) !important;
+  color: #fff !important;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+.highlight {
+  border: 2px solid gold !important;
+  animation: pulse 1s infinite alternate;
+}
+@keyframes pulse {
+  from { box-shadow: 0 0 0 rgba(255,215,0,0.5); }
+  to   { box-shadow: 0 0 10px rgba(255,215,0,1); }
+}
+.empty { visibility: hidden; }
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+.modal-backdrop.show {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-content {
+  background-color: var(--card);
+  color: var(--text);
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px var(--shadow);
+  width: 90%;
+  max-width: 500px;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+.modal-backdrop.show .modal-content {
+  transform: translateY(0);
+}
+.modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: var(--text);
+}
+.modal-title {
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: var(--accent);
+}
+.modal-info p {
+  margin-bottom: 8px;
+  font-size: 0.95em;
+}
+.modal-info p strong {
+  color: var(--accent2);
+}
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+.modal-buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+.modal-buttons .btn-aprobado {
+  background-color: var(--green);
+  color: white;
+}
+.modal-buttons .btn-aprobado:hover {
+  background-color: #0b9e6f;
+}
+.modal-buttons .btn-desmarcar {
+  background-color: var(--red);
+  color: white;
+}
+.modal-buttons .btn-desmarcar:hover {
+  background-color: #d84315;
+}
+.modal-buttons .btn-close {
+    background-color: #ccc;
+    color: var(--text);
+}
+.modal-buttons .btn-close:hover {
+    background-color: #bbb;
+}
+.custom-confirm-modal .modal-content {
+    max-width: 400px;
+    text-align: center;
+}
+.custom-confirm-modal .modal-title {
+    color: var(--red);
+}
+.custom-confirm-modal .modal-buttons {
+    justify-content: center;
+}
+.custom-alert-modal .modal-content {
+    max-width: 400px;
+    text-align: center;
+}
+.custom-alert-modal .modal-title {
+    color: var(--accent);
+}
+.custom-alert-modal .modal-buttons {
+    justify-content: center;
+}
+#semester-complete-modal .modal-content {
+    background-color: var(--success-modal-bg);
+    color: var(--success-modal-text);
+    border: 3px solid var(--green);
+    animation: bounceIn 0.6s ease-out;
+    text-align: center;
+    max-width: 550px;
+}
+#semester-complete-modal .modal-title {
+    color: var(--success-modal-text);
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+#semester-complete-modal p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+#semester-complete-modal .modal-buttons {
+    justify-content: center;
+}
+#semester-complete-modal .modal-buttons .btn-close {
+    background-color: var(--green);
+    color: white;
+}
+#semester-complete-modal .btn-close:hover {
+    background-color: #0b9e6f;
+}
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); opacity: 1; }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+@media (max-width: 1024px) {
+    #main-header, #topbar {
+        padding: 10px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    #header-left {
+        justify-content: center;
+    }
+    #header-right, #topbar-controls {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    #header-title {
+        font-size: 1.3em;
+        order: -1;
+        width: 100%;
+    }
+    #university-name {
+            font-size: 0.7em;
         }
-        return;
-    }
-    try {
-        // La ruta a la base de datos es segura gracias a las reglas de Firestore que configuramos.
-        // Solo el usuario con el UID correspondiente puede escribir en esta ruta.
-        const userDocRef = doc(db, `users/${currentUser.uid}/progress`);
-        await setDoc(userDocRef, dataToSave);
-    } catch (error) {
-        console.error("Error al guardar los datos del usuario en Firestore: ", error);
-        showCustomAlert("Error al guardar tu progreso en la nube.");
-    }
-}
-
-/**
- * Carga los datos del usuario desde Firestore si hay un usuario autenticado,
- * o desde LocalStorage como fallback.
- */
-async function loadUserData() {
-    if (!currentUser) {
-        // Carga desde localStorage si no hay usuario
-        loadLocalData();
-        updateUI();
-        return;
-    }
-
-    // La ruta a la base de datos es segura gracias a las reglas de Firestore.
-    const userDocRef = doc(db, `users/${currentUser.uid}/progress`);
-    try {
-        const docSnap = await getDoc(userDocRef);
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            aprobados = new Set(data.aprobados || []);
-            completedSem = new Set(data.completedSem || []);
-            completedYear = new Set(data.completedYear || []);
-            setTheme(data.theme || 'light');
-        } else {
-            // Si no hay datos en la nube, intenta cargar desde local y luego sincroniza
-            loadLocalData();
-            await saveUserData(); // Guarda los datos locales en la nube por primera vez
+        #clock {
+            min-width: unset;
+            width: auto;
         }
-    } catch (error) {
-        console.error("Error al cargar los datos del usuario desde Firestore: ", error);
-        showCustomAlert("Error al cargar tu progreso desde la nube. Se usarán datos locales.");
-        loadLocalData();
-    }
-    updateUI();
-}
-
-/**
- * Carga los datos de progreso desde LocalStorage.
- */
-function loadLocalData() {
-    aprobados = new Set(JSON.parse(localStorage.getItem('aprobados')) || []);
-    completedSem = new Set(JSON.parse(localStorage.getItem('completedSem')) || []);
-    completedYear = new Set(JSON.parse(localStorage.getItem('completedYear')) || []);
-    const savedTheme = JSON.parse(localStorage.getItem('theme')) || 'light';
-    setTheme(savedTheme);
-}
-
-// --- Manejador de Cambio de Estado de Autenticación ---
-
-// Se ejecuta cada vez que el estado de autenticación del usuario cambia (login/logout)
-onAuthStateChanged(auth, async (user) => {
-    currentUser = user;
-    if (user) {
-        // Usuario ha iniciado sesión
-        userNameSpan.textContent = user.displayName || user.email;
-        loginBtn.style.display = 'none';
-        loginDropdown.classList.remove('show');
-        userInfoDiv.style.display = 'flex';
-    } else {
-        // Usuario ha cerrado sesión
-        loginBtn.style.display = 'block';
-        userInfoDiv.style.display = 'none';
-    }
-    // Carga los datos correspondientes al estado de autenticación
-    await loadUserData();
-});
-
-// --- Funciones de Actualización de UI y Tema ---
-
-/**
- * Establece el tema de la aplicación.
- * @param {string} themeName - El nombre del tema ('light', 'dark', 'pastel', etc.).
- */
-function setTheme(themeName) {
-    document.body.className = ''; // Limpia todas las clases existentes
-    if (themeName !== 'light') {
-        document.body.classList.add(themeName);
-    }
-    themeSelector.value = themeName;
-}
-
-// Event listener para cambiar el tema
-themeSelector.addEventListener('change', (e) => {
-  setTheme(e.target.value);
-  saveUserData(); // Guarda el cambio de tema
-});
-
-// --- Event Listeners para Autenticación ---
-
-// Muestra/oculta el dropdown de inicio de sesión
-loginBtn.addEventListener('click', () => {
-    loginDropdown.classList.toggle('show');
-});
-
-// Cierra el dropdown si se hace clic fuera de él
-document.addEventListener('click', (e) => {
-    if (!loginBtn.contains(e.target) && !loginDropdown.contains(e.target)) {
-        loginDropdown.classList.remove('show');
-    }
-});
-
-// Abre el modal de registro al hacer clic en el enlace "Crea una aquí"
-createAccountLink.addEventListener('click', () => {
-    loginDropdown.classList.remove('show');
-    showModal('register-modal');
-});
-
-// Inicio de sesión con Email/Contraseña
-loginSubmitBtn.addEventListener('click', async () => {
-    const email = loginEmailInput.value;
-    const password = loginPasswordInput.value;
-    if (!email || !password) {
-        showCustomAlert("Por favor, ingresa correo y contraseña.");
-        return;
-    }
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-        loginDropdown.classList.remove('show');
-    } catch (error) {
-        console.error("Error de inicio de sesión:", error);
-        showCustomAlert("Error al iniciar sesión: " + error.message);
-    }
-});
-
-// Registro con Email/Contraseña
-registerSubmitBtn.addEventListener('click', async () => {
-    const email = registerEmailInput.value;
-    const password = registerPasswordInput.value;
-    if (!email || !password) {
-        showCustomAlert("Por favor, ingresa correo y contraseña.");
-        return;
-    }
-    if (password.length < 6) {
-        showCustomAlert("La contraseña debe tener al menos 6 caracteres.");
-        return;
-    }
-    try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        closeModal('register-modal');
-    } catch (error) {
-        console.error("Error de registro:", error);
-        showCustomAlert("Error al registrarse: " + error.message);
-    }
-});
-
-// Google Sign-In (para login y registro)
-const handleGoogleSignIn = async () => {
-    try {
-        await signInWithPopup(auth, googleProvider);
-        loginDropdown.classList.remove('show');
-        closeModal('register-modal');
-    } catch (error) {
-        console.error("Error de inicio de sesión con Google:", error);
-        if (error.code === 'auth/unauthorized-domain') {
-             showCustomAlert(`Error: El dominio desde el que intentas acceder no está autorizado. Por favor, agrega el dominio a la lista de dominios autorizados en tu configuración de Firebase Authentication.`);
-        } else {
-            showCustomAlert("Error con el inicio de sesión de Google: " + error.message);
+        #creditos-info {
+            margin-left: 0;
+            width: 100%;
+            justify-content: center;
+        }
+        #content-wrapper {
+            flex-direction: column;
+            padding: 15px;
+            gap: 15px;
+        }
+        #left-sidebar {
+            max-width: 100%;
+            min-width: unset;
+        }
+        #malla-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+        #malla {
+            width: fit-content;
+            margin: 0 auto;
+        }
+        .year {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .year-label {
+            padding: 10px 15px;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .horas-sellos-btn {
+            font-size: 0.75em;
+            padding: 4px 8px;
+        }
+        .ramo {
+            font-size: 0.9em;
+            padding: 6px 8px;
+        }
+        #combined-info summary {
+            width: 100%;
+        }
+        #combined-info > div {
+            width: 100%;
         }
     }
-};
-googleLoginBtn.addEventListener('click', handleGoogleSignIn);
-googleRegisterBtn.addEventListener('click', handleGoogleSignIn);
-
-// Cierre de sesión
-logoutBtn.addEventListener('click', async () => {
-    try {
-        await signOut(auth);
-    } catch (error) {
-        console.error("Error al cerrar sesión:", error);
-        showCustomAlert("Error al cerrar sesión.");
-    }
-});
-
-// --- Lógica del Reloj ---
-function updateClock(){
-  const now = new Date();
-  const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  const dateString = now.toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-  clockElement.innerHTML = `<div class="time">${timeString}</div><div class="date">${dateString}</div>`;
-}
-setInterval(updateClock,1000);
-updateClock();
-
-// --- Lógica de Zoom ---
-zoomRange.addEventListener('input', e => {
-  mallaContainer.style.transform = `scale(${e.target.value/100})`;
-});
-mallaContainer.style.transform = `scale(${zoomRange.value/100})`;
-
-/**
- * Elimina un ramo y sus dependientes de la lista de aprobados.
- * @param {string} code - El código del ramo a desmarcar.
- */
-async function cascadeRemove(code){
-  aprobados.delete(code);
-  const dependentRamos = document.querySelectorAll(`.ramo[data-req*="${code}"]`);
-  for (const r of dependentRamos) {
-    if (aprobados.has(r.dataset.code)) {
-      await cascadeRemove(r.dataset.code);
-    }
-  }
-}
-
-// Créditos totales requeridos por área
-const CREDITOS_TOTALES_POR_AREA = {
-    espiritual: 14,
-    general: 22,
-    profesional: 166,
-    especialidad: 50,
-    practica: 46
-};
-
-/**
- * Actualiza la interfaz de usuario: progreso de ramos, semestres, años y créditos por área.
- */
-function updateUI(){
-  let totalCreditosAprobados = 0;
-  let creditosPorArea = { espiritual: 0, general: 0, profesional: 0, especialidad: 0, practica: 0 };
-
-  document.querySelectorAll('.semestre').forEach(s=>{
-    const hijos = s.querySelectorAll('.ramo');
-    const progressFill = s.querySelector('.progress-fill');
-    if (!progressFill) return;
-
-    let aprobadosEnSemestre = 0;
-    hijos.forEach(r=>{
-      const code = r.dataset.code;
-      const dependencies = r.dataset.req ? r.dataset.req.split(',') : [];
-      r.classList.remove('aprobado','desbloqueado','highlight');
-
-      if(aprobados.has(code)){
-        r.classList.add('aprobado');
-        aprobadosEnSemestre++;
-        const creditos = parseInt(r.dataset.creditos);
-        const area = r.dataset.area;
-        if (!isNaN(creditos)) {
-            totalCreditosAprobados += creditos;
-            if (creditosPorArea[area] !== undefined) {
-                creditosPorArea[area] += creditos;
-            }
+    @media (max-width: 600px) {
+        #main-header {
+            padding: 8px 10px;
         }
-      } else if(dependencies.length > 0 && dependencies.every(q => aprobados.has(q))){
-        r.classList.add('desbloqueado');
-      }
-    });
-
-    progressFill.style.width = hijos.length > 0 ? (aprobadosEnSemestre / hijos.length * 100) + '%' : '0%';
-    
-    const semesterNumber = s.dataset.sem;
-    if(aprobadosEnSemestre === hijos.length && hijos.length > 0 && !completedSem.has(semesterNumber)){
-      showSemesterCompleteModal(`¡Felicidades, sobreviviste al ${semesterNumber}° semestre!`);
-      completedSem.add(semesterNumber);
-      saveUserData();
-    }
-  });
-
-  document.getElementById('contador').textContent = Math.round(aprobados.size / totalRamos * 100) + '%';
-  document.getElementById('creditos-total').textContent = totalCreditosAprobados;
-
-  // Actualiza los créditos por área en la leyenda
-  for (const area in creditosPorArea) {
-      const span = document.getElementById(`creditos-${area}`);
-      const total = CREDITOS_TOTALES_POR_AREA[area];
-      const current = creditosPorArea[area];
-      span.textContent = `${current}/${total}`;
-      
-      const row = document.querySelector(`#legend tr[data-area="${area}"] td`);
-      if (row) {
-        if (current >= total) {
-            row.classList.add('area-completed');
-        } else {
-            row.classList.remove('area-completed');
+        #header-left img {
+            height: 40px;
         }
-      }
-  }
-
-  // Comprueba y marca años completados
-  document.querySelectorAll('.year').forEach(y=>{
-    const yearNumber = y.dataset.year;
-    const semestersInYear = y.querySelectorAll('.semestre:not(.empty)');
-    const allSemestersComplete = [...semestersInYear].every(s => parseFloat(s.querySelector('.progress-fill').style.width) === 100);
-    
-    if (allSemestersComplete && semestersInYear.length > 0) {
-        y.setAttribute('data-year-complete','');
-        if(!completedYear.has(yearNumber)) {
-            showSemesterCompleteModal(`¡Felicidades, completaste el ${yearNumber}° año!`);
-            completedYear.add(yearNumber);
-            saveUserData();
+        #header-title {
+            font-size: 1.1em;
         }
-    } else {
-        y.removeAttribute('data-year-complete');
-    }
-  });
-}
-
-/**
- * Muestra el modal de información de un ramo específico.
- * @param {HTMLElement} ramoElement - El elemento HTML del ramo.
- */
-function showRamoInfoModal(ramoElement) {
-    const code = ramoElement.dataset.code;
-    ramoInfoModal.querySelector('#modal-ramo-nombre').textContent = ramoElement.textContent.trim();
-    ramoInfoModal.querySelector('#modal-ramo-code').textContent = code;
-    ramoInfoModal.querySelector('#modal-ramo-area').textContent = ramoElement.dataset.area;
-    ramoInfoModal.querySelector('#modal-ramo-creditos').textContent = ramoElement.dataset.creditos || 'N/A';
-    const reqRamo = document.querySelector(`.ramo[data-code="${ramoElement.dataset.req}"]`);
-    ramoInfoModal.querySelector('#modal-ramo-req').textContent = reqRamo ? reqRamo.textContent.trim() : (ramoElement.dataset.req || 'Ninguno');
-    ramoInfoModal.querySelector('#modal-ramo-desc').textContent = ramoElement.dataset.desc || 'No hay descripción.';
-    
-    if (aprobados.has(code)) {
-        ramoInfoModal.querySelector('#modal-btn-aprobado').style.display = 'none';
-        ramoInfoModal.querySelector('#modal-btn-desmarcar').style.display = 'inline-block';
-    } else {
-        ramoInfoModal.querySelector('#modal-btn-aprobado').style.display = 'inline-block';
-        ramoInfoModal.querySelector('#modal-btn-desmarcar').style.display = 'none';
-    }
-    
-    ramoInfoModal.dataset.currentCode = code;
-    showModal('ramo-info-modal');
-}
-
-// Asigna el evento click a cada ramo para mostrar su información
-ramos.forEach(r => r.onclick = () => showRamoInfoModal(r));
-
-// Event listener para el botón "Marcar como Aprobado" en el modal de ramo
-ramoInfoModal.querySelector('#modal-btn-aprobado').addEventListener('click', async () => {
-    const code = ramoInfoModal.dataset.currentCode;
-    const ramoElement = document.querySelector(`.ramo[data-code="${code}"]`);
-    const dependencies = ramoElement.dataset.req ? ramoElement.dataset.req.split(',') : [];
-
-    // Comprueba si todos los prerrequisitos están aprobados
-    if (dependencies.length === 0 || dependencies.every(q => aprobados.has(q))) {
-        aprobados.add(code);
-        await saveUserData();
-        updateUI();
-        closeModal('ramo-info-modal');
-    } else {
-        const faltante = dependencies.find(q => !aprobados.has(q));
-        const nombreFaltante = document.querySelector(`.ramo[data-code="${faltante}"]`).textContent;
-        showCustomAlert(`Aún no has aprobado "${nombreFaltante.trim()}" para tomar este ramo.`);
-    }
-});
-
-// Event listener para el botón "Desmarcar" en el modal de ramo
-ramoInfoModal.querySelector('#modal-btn-desmarcar').addEventListener('click', async () => {
-    const code = ramoInfoModal.dataset.currentCode;
-    await cascadeRemove(code); // Desmarca el ramo y sus dependientes
-    await saveUserData();
-    updateUI();
-    closeModal('ramo-info-modal');
-});
-
-/**
- * Reinicia todo el progreso del usuario.
- */
-function reset() {
-  showCustomConfirm('¿Estás seguro de que quieres reiniciar todo el progreso? Esto no se puede deshacer.', async () => {
-    aprobados.clear();
-    completedSem.clear();
-    completedYear.clear();
-    await saveUserData();
-    updateUI();
-    closeModal('custom-confirm-modal');
-  });
-}
-document.getElementById('reset-btn').addEventListener('click', reset);
-
-// --- Gestión de Modales ---
-/**
- * Muestra un modal específico.
- * @param {string} modalId - El ID del modal a mostrar.
- */
-function showModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if(modal) modal.classList.add('show');
-}
-
-/**
- * Cierra un modal específico.
- * @param {string} modalId - El ID del modal a cerrar.
- */
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if(modal) modal.classList.remove('show');
-}
-
-/**
- * Muestra un modal de alerta personalizado.
- * @param {string} message - El mensaje a mostrar.
- * @param {string} [title="Información"] - El título del modal.
- */
-function showCustomAlert(message, title = "Información") {
-    const alertModal = document.getElementById('tr-nico-message-modal');
-    alertModal.querySelector('.modal-title').textContent = title;
-    alertModal.querySelector('p').textContent = message;
-    showModal('tr-nico-message-modal');
-}
-
-/**
- * Muestra una alerta auto-cerrable en la parte superior de la pantalla.
- * @param {string} message - El mensaje a mostrar.
- * @param {number} [duration=3000] - Duración en milisegundos antes de que la alerta se oculte.
- */
-function showAutoCloseAlert(message, duration = 3000) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'auto-close-alert';
-    alertDiv.textContent = message;
-    document.body.appendChild(alertDiv);
-
-    setTimeout(() => {
-        alertDiv.classList.add('hide');
-        setTimeout(() => {
-            if (document.body.contains(alertDiv)) {
-                document.body.removeChild(alertDiv);
-            }
-        }, 500); // Espera la transición de desvanecimiento
-    }, duration);
-}
-
-/**
- * Muestra un modal de confirmación personalizado.
- * @param {string} message - El mensaje de confirmación.
- * @param {Function} onConfirm - La función a ejecutar si el usuario confirma.
- */
-function showCustomConfirm(message, onConfirm) {
-    const confirmModal = document.getElementById('custom-confirm-modal');
-    confirmModal.querySelector('#confirm-message').textContent = message;
-    const yesBtn = confirmModal.querySelector('#confirm-reset-yes');
-    
-    // Clona el botón para remover event listeners anteriores
-    const newYesBtn = yesBtn.cloneNode(true);
-    yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
-    newYesBtn.addEventListener('click', onConfirm);
-
-    showModal('custom-confirm-modal');
-}
-
-/**
- * Muestra un modal de felicitaciones cuando un semestre o año es completado.
- * @param {string} message - El mensaje de felicitación.
- */
-function showSemesterCompleteModal(message) {
-    semesterCompleteModal.querySelector('#semester-complete-message').textContent = message;
-    showModal('semester-complete-modal');
-}
-
-// --- Configura los comportamientos de cierre para todos los modales ---
-document.querySelectorAll('.modal-backdrop').forEach(modal => {
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) { // Cierra si se hace clic fuera del contenido del modal
-            closeModal(modal.id);
+        #university-name {
+            font-size: 0.6em;
         }
-    });
-    // Cierra el modal al hacer clic en el botón de cerrar o en el botón "No, cancelar"
-    modal.querySelectorAll('.modal-close-button, .btn-close, #confirm-reset-no, #tr-nico-modal-close-btn, #semester-complete-modal-close-btn').forEach(btn => {
-        btn.addEventListener('click', () => closeModal(modal.id));
-    });
-});
-
-// Event listener para el botón de información del "tr._nico"
-document.getElementById('tr-nico-info-btn').addEventListener('click', () => {
-    showCustomAlert("Regalito del tr._nico para mis compañeros químicos farmacéuticos.", "Mensaje Especial");
-});
-
-// --- Lógica de Filtrado y Búsqueda ---
-/**
- * Normaliza una cadena de texto para la búsqueda (minúsculas, sin acentos).
- * @param {string} s - La cadena a normalizar.
- * @returns {string} La cadena normalizada.
- */
-const normalize = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-
-/**
- * Filtra los ramos según el texto de búsqueda y el área seleccionada.
- */
-function filterRamos(){
-  const query = normalize(buscador.value);
-  const area = areaFilter.value;
-  ramos.forEach(r=>{
-    const text = normalize(r.textContent);
-    const ramoArea = r.dataset.area;
-    const isVisible = (!query || text.includes(query)) && (!area || ramoArea === area);
-    r.style.display = isVisible ? '' : 'none';
-    r.classList.toggle('highlight', isVisible && (query !== '' || area !== ''));
-  });
-}
-buscador.addEventListener('input', filterRamos);
-areaFilter.addEventListener('change', filterRamos);
-
-// --- Lógica para el menú desplegable de Guardar/Exportar ---
-document.getElementById('export-json-btn').addEventListener('click', () => {
-    const dataToExport = {
-        aprobados: [...aprobados],
-        theme: themeSelector.value,
-        completedSem: [...completedSem],
-        completedYear: [...completedYear]
-    };
-    const dataStr = JSON.stringify(dataToExport);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'progreso_malla_unach.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    a.remove();
-    showAutoCloseAlert('Progreso exportado exitosamente.');
-});
-
-document.getElementById('import-json-btn').addEventListener('click', () => {
-    document.getElementById('import-file').click();
-});
-
-document.getElementById('import-file').addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        try {
-            const data = JSON.parse(e.target.result);
-            if (data && Array.isArray(data.aprobados)) {
-                aprobados = new Set(data.aprobados);
-                completedSem = new Set(data.completedSem || []);
-                completedYear = new Set(data.completedYear || []);
-                setTheme(data.theme || 'light');
-                await saveUserData(); // Guardar los datos importados en Firebase/LocalStorage
-                updateUI();
-                showAutoCloseAlert('Progreso importado exitosamente.');
-            } else {
-                showCustomAlert('El archivo de progreso no es válido.');
-            }
-        } catch (error) {
-            showCustomAlert('Error al leer el archivo.');
+        #topbar {
+            padding: 8px 10px;
+            font-size: 0.8em;
         }
-    };
-    reader.readAsText(file);
-    event.target.value = ''; // Resetea el input del archivo
-});
-
-// --- LÓGICA DE EXPORTACIÓN A PDF MEJORADA ---
-
-/**
- * Convierte una imagen de URL a Base64.
- * @param {string} url - La URL de la imagen.
- * @returns {Promise<string>} La imagen en formato Base64.
- */
-const imageToBase64 = async (url) => {
-    try {
-        const cacheBustingUrl = `${url}?v=${new Date().getTime()}`;
-        const response = await fetch(cacheBustingUrl, { cache: 'no-store' });
-        const blob = await response.blob();
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        });
-    } catch (error) {
-        console.error("Error al convertir imagen a Base64:", error);
-        return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // Pixel transparente como fallback
-    }
-};
-
-document.getElementById('export-pdf-btn').addEventListener('click', async () => {
-    const exportButton = document.getElementById('export-pdf-btn');
-    showCustomAlert("Generando PDF, por favor espera...", "Exportando");
-    exportButton.disabled = true;
-
-    const exportContainer = document.createElement('div');
-    exportContainer.id = 'pdf-export-container';
-    
-    Object.assign(exportContainer.style, {
-        position: 'absolute',
-        left: '-9999px',
-        top: '0px',
-        padding: '40px',
-        backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg'),
-        color: getComputedStyle(document.body).getPropertyValue('--text'),
-        width: '1900px'
-    });
-    
-    document.body.appendChild(exportContainer);
-
-    const headerElement = document.createElement('div');
-    const logoImg = document.querySelector('#header-left img');
-    const logoBase64 = await imageToBase64(logoImg.src);
-    const titleText = document.querySelector('#header-title a').textContent.trim();
-    const universityText = document.querySelector('#university-name').textContent.trim();
-    headerElement.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 2px solid var(--accent);">
-            <img src="${logoBase64}" style="height: 60px;">
-            <div style="text-align: center;">
-                <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2em; color: var(--accent); margin: 0;">${titleText}</h1>
-                <h2 style="font-family: 'Inter', sans-serif; font-size: 1.1em; font-weight: 600; margin: 5px 0 0 0;">${universityText}</h2>
-            </div>
-            <div style="width: 60px;"></div>
-        </div>
-    `;
-    exportContainer.appendChild(headerElement);
-
-    const mallaOriginal = document.getElementById('malla');
-    const mallaCloned = mallaOriginal.cloneNode(true);
-    mallaCloned.id = 'malla-cloned-for-export';
-    mallaCloned.classList.add('malla-for-export');
-    exportContainer.appendChild(mallaCloned);
-
-    const infoContainer = document.createElement('div');
-    infoContainer.style.display = 'flex';
-    infoContainer.style.justifyContent = 'space-between';
-    infoContainer.style.alignItems = 'flex-start';
-    infoContainer.style.marginTop = '20px';
-    
-    const legendCloned = document.getElementById('legend').cloneNode(true);
-    legendCloned.style.margin = '0';
-    infoContainer.appendChild(legendCloned);
-
-    const creditosText = document.getElementById('creditos-info').textContent.trim();
-    const selectedThemeOption = themeSelector.options[themeSelector.selectedIndex];
-    const themeText = `Tema: ${selectedThemeOption.text}`;
-    const dateText = `Fecha: ${new Date().toLocaleString('es-CL')}`;
-    const footerInfo = document.createElement('div');
-    footerInfo.style.textAlign = 'right';
-    footerInfo.innerHTML = `
-            <p style="font-size: 1em; font-weight: 600; margin: 0 0 5px 0;">${creditosText}</p>
-            <p style="font-size: 1em; margin: 0 0 5px 0;">${themeText}</p>
-            <p style="font-size: 1em; margin: 0;">${dateText}</p>
-        `;
-    infoContainer.appendChild(footerInfo);
-    exportContainer.appendChild(infoContainer);
-
-    const { jsPDF } = window.jspdf;
-    try {
-        const canvas = await html2canvas(exportContainer, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            logging: false
-        });
-
-        const imgData = canvas.toDataURL('image/png');
-        const doc = new jsPDF({
-            orientation: 'landscape',
-            unit: 'px',
-            format: [canvas.width, canvas.height]
-        });
-
-        doc.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-        doc.save('Malla-UNACH-Progreso.pdf');
-        
-        showAutoCloseAlert('¡Tu malla se ha descargado con éxito!');
-
-    } catch (error) {
-        console.error("Error al exportar a PDF:", error);
-        showCustomAlert("Hubo un error al generar el PDF. Asegúrate de que no haya bloqueadores de contenido activos e inténtalo de nuevo.");
-    } finally {
-        document.body.removeChild(exportContainer);
-        exportButton.disabled = false;
-        closeModal('tr-nico-message-modal');
-    }
-});
-
-// --- Lógica del Calendario ---
-const calendarGrid = document.getElementById('calendar-grid');
-const currentMonthYear = document.getElementById('current-month-year');
-let currentCalendarDate = new Date();
-
-/**
- * Renderiza el calendario para el mes y año actuales.
- */
-function renderCalendar() {
-    if (!calendarGrid || !currentMonthYear) return; // Salir si los elementos no existen
-    
-    const month = currentCalendarDate.getMonth();
-    const year = currentCalendarDate.getFullYear();
-    currentMonthYear.textContent = `${new Date(year, month).toLocaleString('es-ES', { month: 'long', year: 'numeric' })}`;
-    
-    calendarGrid.innerHTML = ''; // Limpia el calendario
-    const dayNames = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-    dayNames.forEach(day => {
-        const dayNameEl = document.createElement('div');
-        dayNameEl.className = 'day-name';
-        dayNameEl.textContent = day;
-        calendarGrid.appendChild(dayNameEl);
-    });
-
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const startOffset = (firstDay === 0) ? 6 : firstDay - 1;
-
-    for (let i = 0; i < startOffset; i++) {
-        const emptyDay = document.createElement('div');
-        emptyDay.classList.add('calendar-day', 'empty');
-        calendarGrid.appendChild(emptyDay);
-    }
-
-    const today = new Date();
-    for (let i = 1; i <= daysInMonth; i++) {
-        const dayEl = document.createElement('div');
-        dayEl.className = 'calendar-day';
-        dayEl.textContent = i;
-        if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-            dayEl.classList.add('current-day');
+        #topbar-controls button,
+        #topbar-controls input,
+        #topbar-controls select {
+            font-size: 0.8em;
+            padding: 5px 8px;
         }
-        calendarGrid.appendChild(dayEl);
+        #creditos-info {
+            font-size: 0.8em;
+            padding: 6px 10px;
+        }
+        #legend {
+            font-size: 0.8em;
+            padding: 10px;
+        }
+        .widget-card h4 {
+            font-size: 0.9em;
+        }
+        .widget-card a {
+            padding: 6px 10px;
+            font-size: 0.85em;
+        }
+        .ramo {
+            font-size: 0.85em;
+        }
+        #login-dropdown {
+            width: 90vw;
+        }
     }
-}
-
-// Event listeners para cambiar de mes en el calendario
-document.getElementById('prev-month')?.addEventListener('click', () => {
-    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-    renderCalendar();
-});
-document.getElementById('next-month')?.addEventListener('click', () => {
-    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-    renderCalendar();
-});
-
-// --- Inicialización ---
-// Renderiza el calendario y actualiza el reloj al cargar la página.
-// El resto de la UI se actualiza cuando el estado de autenticación cambia.
-renderCalendar();
-updateClock();
+    .malla-for-export {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: flex-start;
+      gap: 15px !important;
+      padding: 20px;
+    }
+    .malla-for-export .year {
+      grid-template-columns: 1fr !important;
+      width: 280px !important;
+      flex-shrink: 0;
+    }
+    .malla-for-export .semestre {
+      page-break-inside: avoid;
+    }
+    .auto-close-alert {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 20px;
+        border-radius: 8px;
+        background-color: var(--green);
+        color: white;
+        font-weight: 600;
+        z-index: 9999;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        opacity: 1;
+        transition: opacity 0.5s ease-out, top 0.5s ease-out;
+    }
+    .auto-close-alert.hide {
+        opacity: 0;
+        top: -50px;
+    }
