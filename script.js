@@ -30,11 +30,11 @@ async function main() {
         // Contiene la configuración de tu proyecto de forma segura, sin exponerla en el código fuente.
         const response = await fetch('/__/firebase/init.json');
         if (!response.ok) {
-            throw new Error('Could not fetch Firebase config. Are you running on Firebase Hosting?');
+            throw new Error('No se pudo obtener la configuración de Firebase. ¿Estás ejecutando en Firebase Hosting?');
         }
         firebaseConfig = await response.json();
     } catch (error) {
-        console.error("CRITICAL: Could not initialize Firebase.", error);
+        console.error("CRÍTICO: No se pudo inicializar Firebase.", error);
         // Muestra un error amigable si la configuración no se puede cargar.
         // Esto suele pasar si se abre el archivo localmente en lugar de usar `firebase serve` o desplegarlo.
         document.body.innerHTML = `
@@ -56,7 +56,6 @@ async function main() {
 
     // --- A PARTIR DE AQUÍ, TODO EL CÓDIGO ORIGINAL DE LA APLICACIÓN ---
 
-    // --- Referencias a Elementos del DOM ---
     const ramos = document.querySelectorAll('.ramo');
     const buscador = document.getElementById('buscador');
     const areaFilter = document.getElementById('area-filter');
@@ -64,8 +63,6 @@ async function main() {
     const clockElement = document.getElementById('clock');
     const themeSelector = document.getElementById('theme-selector');
     const mallaContainer = document.getElementById('malla-container');
-
-    // Elementos de la UI de Autenticación
     const loginBtn = document.getElementById('login-btn');
     const loginDropdown = document.getElementById('login-dropdown');
     const loginEmailInput = document.getElementById('login-email');
@@ -76,28 +73,21 @@ async function main() {
     const userInfoDiv = document.getElementById('user-info');
     const userNameSpan = document.getElementById('user-name');
     const logoutBtn = document.getElementById('logout-btn');
-
-    // Elementos del Modal de Registro
     const registerModal = document.getElementById('register-modal');
     const registerEmailInput = document.getElementById('register-email');
     const registerPasswordInput = document.getElementById('register-password');
     const registerSubmitBtn = document.getElementById('register-submit-btn');
     const googleRegisterBtn = document.getElementById('google-register-btn');
-
-    // Otros Modales
     const ramoInfoModal = document.getElementById('ramo-info-modal');
     const customConfirmModal = document.getElementById('custom-confirm-modal');
     const trNicoMessageModal = document.getElementById('tr-nico-message-modal');
     const semesterCompleteModal = document.getElementById('semester-complete-modal');
 
-    // --- Variables de Estado de la Aplicación ---
     let currentUser = null;
     let aprobados = new Set();
     let completedSem = new Set();
     let completedYear = new Set();
     const totalRamos = ramos.length;
-
-    // --- Funciones de Persistencia de Datos (Firebase y LocalStorage) ---
 
     async function saveUserData() {
         const dataToSave = {
@@ -117,7 +107,7 @@ async function main() {
             const userDocRef = doc(db, `users/${currentUser.uid}/progress`);
             await setDoc(userDocRef, dataToSave);
         } catch (error) {
-            console.error("Error al guardar los datos del usuario en Firestore: ", error);
+            console.error("Error al guardar datos en Firestore: ", error);
             showCustomAlert("Error al guardar tu progreso en la nube.");
         }
     }
@@ -143,8 +133,8 @@ async function main() {
                 await saveUserData();
             }
         } catch (error) {
-            console.error("Error al cargar los datos del usuario desde Firestore: ", error);
-            showCustomAlert("Error al cargar tu progreso desde la nube. Se usarán datos locales.");
+            console.error("Error al cargar datos de Firestore: ", error);
+            showCustomAlert("Error al cargar tu progreso. Se usarán datos locales.");
             loadLocalData();
         }
         updateUI();
@@ -157,8 +147,6 @@ async function main() {
         const savedTheme = JSON.parse(localStorage.getItem('theme')) || 'light';
         setTheme(savedTheme);
     }
-
-    // --- Manejador de Cambio de Estado de Autenticación ---
 
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
@@ -174,8 +162,6 @@ async function main() {
         await loadUserData();
     });
 
-    // --- Funciones de Actualización de UI y Tema ---
-
     function setTheme(themeName) {
         document.body.className = '';
         if (themeName && themeName !== 'light') {
@@ -188,8 +174,6 @@ async function main() {
       setTheme(e.target.value);
       saveUserData();
     });
-
-    // --- Event Listeners para Autenticación ---
 
     loginBtn.addEventListener('click', () => {
         loginDropdown.classList.toggle('show');
@@ -248,9 +232,9 @@ async function main() {
             loginDropdown.classList.remove('show');
             closeModal('register-modal');
         } catch (error) {
-            console.error("Error de inicio de sesión con Google:", error);
+            console.error("Error con Google Sign-In:", error);
             if (error.code === 'auth/unauthorized-domain') {
-                 showCustomAlert(`Error: El dominio desde el que intentas acceder no está autorizado. Por favor, agrega el dominio a la lista de dominios autorizados en tu configuración de Firebase Authentication.`);
+                 showCustomAlert(`Error: El dominio no está autorizado. Agrega el dominio a la lista de dominios autorizados en tu configuración de Firebase Authentication.`);
             } else {
                 showCustomAlert("Error con el inicio de sesión de Google: " + error.message);
             }
@@ -268,7 +252,6 @@ async function main() {
         }
     });
 
-    // --- Lógica del Reloj ---
     function updateClock(){
       const now = new Date();
       const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -278,7 +261,6 @@ async function main() {
     setInterval(updateClock,1000);
     updateClock();
 
-    // --- Lógica de Zoom ---
     zoomRange.addEventListener('input', e => {
       mallaContainer.style.transform = `scale(${e.target.value/100})`;
     });
@@ -295,11 +277,7 @@ async function main() {
     }
 
     const CREDITOS_TOTALES_POR_AREA = {
-        espiritual: 14,
-        general: 22,
-        profesional: 166,
-        especialidad: 50,
-        practica: 46
+        espiritual: 14, general: 22, profesional: 166, especialidad: 50, practica: 46
     };
 
     function updateUI(){
@@ -354,11 +332,7 @@ async function main() {
           
           const row = document.querySelector(`#legend tr[data-area="${area}"] td`);
           if (row) {
-            if (current >= total) {
-                row.classList.add('area-completed');
-            } else {
-                row.classList.remove('area-completed');
-            }
+            row.classList.toggle('area-completed', current >= total);
           }
       }
 
@@ -390,13 +364,8 @@ async function main() {
         ramoInfoModal.querySelector('#modal-ramo-req').textContent = reqRamo ? reqRamo.textContent.trim() : (ramoElement.dataset.req || 'Ninguno');
         ramoInfoModal.querySelector('#modal-ramo-desc').textContent = ramoElement.dataset.desc || 'No hay descripción.';
         
-        if (aprobados.has(code)) {
-            ramoInfoModal.querySelector('#modal-btn-aprobado').style.display = 'none';
-            ramoInfoModal.querySelector('#modal-btn-desmarcar').style.display = 'inline-block';
-        } else {
-            ramoInfoModal.querySelector('#modal-btn-aprobado').style.display = 'inline-block';
-            ramoInfoModal.querySelector('#modal-btn-desmarcar').style.display = 'none';
-        }
+        ramoInfoModal.querySelector('#modal-btn-aprobado').style.display = aprobados.has(code) ? 'none' : 'inline-block';
+        ramoInfoModal.querySelector('#modal-btn-desmarcar').style.display = aprobados.has(code) ? 'inline-block' : 'none';
         
         ramoInfoModal.dataset.currentCode = code;
         showModal('ramo-info-modal');
@@ -429,7 +398,7 @@ async function main() {
         closeModal('ramo-info-modal');
     });
 
-    function reset() {
+    document.getElementById('reset-btn').addEventListener('click', () => {
       showCustomConfirm('¿Estás seguro de que quieres reiniciar todo el progreso? Esto no se puede deshacer.', async () => {
         aprobados.clear();
         completedSem.clear();
@@ -438,8 +407,7 @@ async function main() {
         updateUI();
         closeModal('custom-confirm-modal');
       });
-    }
-    document.getElementById('reset-btn').addEventListener('click', reset);
+    });
 
     function showModal(modalId) {
         const modal = document.getElementById(modalId);
@@ -463,14 +431,9 @@ async function main() {
         alertDiv.className = 'auto-close-alert';
         alertDiv.textContent = message;
         document.body.appendChild(alertDiv);
-
         setTimeout(() => {
             alertDiv.classList.add('hide');
-            setTimeout(() => {
-                if (document.body.contains(alertDiv)) {
-                    document.body.removeChild(alertDiv);
-                }
-            }, 500);
+            setTimeout(() => alertDiv.remove(), 500);
         }, duration);
     }
 
@@ -478,11 +441,9 @@ async function main() {
         const confirmModal = document.getElementById('custom-confirm-modal');
         confirmModal.querySelector('#confirm-message').textContent = message;
         const yesBtn = confirmModal.querySelector('#confirm-reset-yes');
-        
         const newYesBtn = yesBtn.cloneNode(true);
         yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
         newYesBtn.addEventListener('click', onConfirm);
-
         showModal('custom-confirm-modal');
     }
 
@@ -496,9 +457,7 @@ async function main() {
 
     document.querySelectorAll('.modal-backdrop').forEach(modal => {
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal(modal.id);
-            }
+            if (e.target === modal) closeModal(modal.id);
         });
         modal.querySelectorAll('.modal-close-button, .btn-close, #confirm-reset-no, #tr-nico-modal-close-btn, #semester-complete-modal-close-btn').forEach(btn => {
             btn.addEventListener('click', () => closeModal(modal.id));
@@ -576,8 +535,7 @@ async function main() {
 
     const imageToBase64 = async (url) => {
         try {
-            const cacheBustingUrl = `${url}?v=${new Date().getTime()}`;
-            const response = await fetch(cacheBustingUrl, { cache: 'no-store' });
+            const response = await fetch(`${url}?v=${new Date().getTime()}`, { cache: 'no-store' });
             const blob = await response.blob();
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -598,14 +556,12 @@ async function main() {
 
         const exportContainer = document.createElement('div');
         exportContainer.id = 'pdf-export-container';
-        
         Object.assign(exportContainer.style, {
             position: 'absolute', left: '-9999px', top: '0px', padding: '40px',
             backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg'),
             color: getComputedStyle(document.body).getPropertyValue('--text'),
             width: '1900px'
         });
-        
         document.body.appendChild(exportContainer);
 
         const headerElement = document.createElement('div');
@@ -621,34 +577,26 @@ async function main() {
                     <h2 style="font-family: 'Inter', sans-serif; font-size: 1.1em; font-weight: 600; margin: 5px 0 0 0;">${universityText}</h2>
                 </div>
                 <div style="width: 60px;"></div>
-            </div>
-        `;
+            </div>`;
         exportContainer.appendChild(headerElement);
 
-        const mallaOriginal = document.getElementById('malla');
-        const mallaCloned = mallaOriginal.cloneNode(true);
+        const mallaCloned = document.getElementById('malla').cloneNode(true);
         mallaCloned.id = 'malla-cloned-for-export';
         mallaCloned.classList.add('malla-for-export');
         exportContainer.appendChild(mallaCloned);
 
         const infoContainer = document.createElement('div');
         infoContainer.style.cssText = 'display: flex; justify-content: space-between; align-items: flex-start; margin-top: 20px;';
-        
         const legendCloned = document.getElementById('legend').cloneNode(true);
         legendCloned.style.margin = '0';
         infoContainer.appendChild(legendCloned);
 
         const creditosText = document.getElementById('creditos-info').textContent.trim();
-        const selectedThemeOption = themeSelector.options[themeSelector.selectedIndex];
-        const themeText = `Tema: ${selectedThemeOption.text}`;
+        const themeText = `Tema: ${themeSelector.options[themeSelector.selectedIndex].text}`;
         const dateText = `Fecha: ${new Date().toLocaleString('es-CL')}`;
         const footerInfo = document.createElement('div');
         footerInfo.style.textAlign = 'right';
-        footerInfo.innerHTML = `
-                <p style="font-size: 1em; font-weight: 600; margin: 0 0 5px 0;">${creditosText}</p>
-                <p style="font-size: 1em; margin: 0 0 5px 0;">${themeText}</p>
-                <p style="font-size: 1em; margin: 0;">${dateText}</p>
-            `;
+        footerInfo.innerHTML = `<p style="font-size: 1em; font-weight: 600; margin: 0 0 5px 0;">${creditosText}</p><p style="font-size: 1em; margin: 0 0 5px 0;">${themeText}</p><p style="font-size: 1em; margin: 0;">${dateText}</p>`;
         infoContainer.appendChild(footerInfo);
         exportContainer.appendChild(infoContainer);
 
@@ -664,7 +612,7 @@ async function main() {
             console.error("Error al exportar a PDF:", error);
             showCustomAlert("Hubo un error al generar el PDF.");
         } finally {
-            document.body.removeChild(exportContainer);
+            exportContainer.remove();
             exportButton.disabled = false;
             closeModal('tr-nico-message-modal');
         }
@@ -716,7 +664,6 @@ async function main() {
         renderCalendar();
     });
 
-    // --- Inicialización ---
     renderCalendar();
     updateClock();
 }
